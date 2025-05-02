@@ -7,6 +7,7 @@ use App\Http\Controllers\EtabDashboardController;
 use App\Http\Controllers\RegistrationCompletionController;
 use App\Http\Controllers\FormationController;
 use App\Models\Etablissement;
+use App\Http\Controllers\UserFormationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,8 +46,17 @@ Route::get('/logout', [AuthController::class, 'logout'])->name('logout');
 
 // 🔹 Dashboard « user »
 Route::middleware(['auth','role:user'])->group(function () {
+    // Dashboard utilisateur
     Route::get('/user/dashboard', fn() => view('user.dashboard'))
          ->name('user.dashboard');
+
+    // Liste des formations
+    Route::get('/user/formations', [UserFormationController::class, 'index'])
+         ->name('user.formations.index');
+
+    // Détails d’une formation
+    Route::get('/user/formations/{formation}', [UserFormationController::class, 'show'])
+         ->name('user.formations.show');
 });
 
 // 🔹 Dashboard validateur établissement (« etab »)

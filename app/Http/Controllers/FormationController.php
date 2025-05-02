@@ -37,37 +37,73 @@ class FormationController extends Controller
      * POST /univ/formations
      */
     public function store(Request $request)
-    {
-        $data = $request->validate([
-            'titre'       => 'required|string|max:255',
-            'thumbnail'   => 'nullable|image',
-            'description' => 'nullable|string',
-            'duree'       => 'required|string|max:255',
-            'lieu'        => 'required|string|max:255',
-            'capacite'    => 'required|integer|min:1',
-            'sessions'    => 'required|in:1,2,3',
-            'deadline'    => 'required|date',
-            'grades'      => 'required|array|min:1',
-            'grades.*'    => 'exists:grades,id',
-        ]);
+{
+    $data = $request->validate([
+        'titre'       => 'required|string|max:255',
+        'thumbnail'   => 'nullable|image',
+        'description' => 'nullable|string',
+        'summary'     => 'nullable|string',                // ← résumé
+        'duree'       => 'required|string|max:255',
+        'lieu'        => 'required|string|max:255',
+        'capacite'    => 'required|integer|min:1',
+        'sessions'    => 'required|in:1,2,3',
+        'deadline'    => 'required|date',
+        'mode'        => 'required|in:presentielle,a_distance', // ← mode
+        'start_at'    => 'nullable|date',                  // ← début
+        'link'        => 'nullable|url',                   // ← lien URL
+        'grades'      => 'required|array|min:1',
+        'grades.*'    => 'exists:grades,id',
+    ]);
 
-        if ($request->hasFile('thumbnail')) {
-            $data['thumbnail'] = $request->file('thumbnail')
-                                        ->store('formations','public');
-        }
-
-        $data['etablissement_id'] = Auth::user()->etablissement_id;
-        $data['status']           = 'available';
-        $data['nbre_demandeur']   = 0;
-        $data['nbre_inscrit']     = 0;
-
-        $formation = Formation::create($data);
-        $formation->grades()->sync($data['grades']);
-
-        return redirect()
-            ->route('univ.formations.index')
-            ->with('success','Formation créée.');
+    if ($request->hasFile('thumbnail')) {
+        $data['thumbnail'] = $request->file('thumbnail')->store('formations','public');
     }
+
+    $data['etablissement_id'] = Auth::user()->etablissement_id;
+    $data['status']           = 'available';
+    $data['nbre_demandeur']   = 0;
+    $data['nbre_inscrit']     = 0;
+
+    $formation = Formation::create($data);
+    $formation->grades()->sync($data['grades']);
+
+    return redirect()
+        ->route('univ.formations.index')
+        ->with('success','Formation créée.');
+}
+
+public function update(Request $request, Formation $formation)
+{
+    $data = $request->validate([
+        // mêmes règles que store…
+        'titre'       => 'required|string|max:255',
+        'thumbnail'   => 'nullable|image',
+        'description' => 'nullable|string',
+        'summary'     => 'nullable|string',
+        'duree'       => 'required|string|max:255',
+        'lieu'        => 'required|string|max:255',
+        'capacite'    => 'required|integer|min:1',
+        'sessions'    => 'required|in:1,2,3',
+        'deadline'    => 'required|date',
+        'mode'        => 'required|in:presentielle,a_distance',
+        'start_at'    => 'nullable|date',
+        'link'        => 'nullable|url',
+        'grades'      => 'required|array|min:1',
+        'grades.*'    => 'exists:grades,id',
+    ]);
+
+    if ($request->hasFile('thumbnail')) {
+        $data['thumbnail'] = $request->file('thumbnail')->store('formations','public');
+    }
+
+    $formation->update($data);
+    $formation->grades()->sync($data['grades']);
+
+    return redirect()
+        ->route('univ.formations.index')
+        ->with('success','Formation mise à jour.');
+}
+
 
     /**
      * Display the specified formation
@@ -92,33 +128,7 @@ class FormationController extends Controller
      * Update the specified formation in storage
      * PUT/PATCH /univ/formations/{formation}
      */
-    public function update(Request $request, Formation $formation)
-    {
-        $data = $request->validate([
-            'titre'       => 'required|string|max:255',
-            'thumbnail'   => 'nullable|image',
-            'description' => 'nullable|string',
-            'duree'       => 'required|string|max:255',
-            'lieu'        => 'required|string|max:255',
-            'capacite'    => 'required|integer|min:1',
-            'sessions'    => 'required|in:1,2,3',
-            'deadline'    => 'required|date',
-            'grades'      => 'required|array|min:1',
-            'grades.*'    => 'exists:grades,id',
-        ]);
-
-        if ($request->hasFile('thumbnail')) {
-            $data['thumbnail'] = $request->file('thumbnail')
-                                        ->store('formations','public');
-        }
-
-        $formation->update($data);
-        $formation->grades()->sync($data['grades']);
-
-        return redirect()
-            ->route('univ.formations.index')
-            ->with('success','Formation mise à jour.');
-    }
+    
 
     /**
      * Remove the specified formation from storage

@@ -13,18 +13,12 @@ class Formation extends Model
      * The attributes that are mass assignable.
      */
     protected $fillable = [
-        'titre',
-        'thumbnail',
-        'description',
-        'duree',
-        'lieu',
-        'capacite',
-        'sessions',
-        'deadline',
-        'etablissement_id',
-        'status',
-        'nbre_demandeur',
-        'nbre_inscrit',
+        'titre','thumbnail','description','summary',
+        'duree','lieu',
+        'capacite','sessions','deadline',
+        'etablissement_id','status',
+        'nbre_demandeur','nbre_inscrit',
+        'mode','start_at','link',
     ];
 
     /**

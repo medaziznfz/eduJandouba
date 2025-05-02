@@ -22,6 +22,7 @@ class User extends Authenticatable
         'password',
         'role',
         'etablissement_id', // ✅ à ajouter
+        'grade_id',
     ];
 
     /**
@@ -45,5 +46,10 @@ class User extends Authenticatable
     public function etablissement()
     {
         return $this->belongsTo(Etablissement::class);
+    }
+
+    public function grade()
+    {
+        return $this->belongsTo(Grade::class);
     }
 }

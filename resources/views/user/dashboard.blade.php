@@ -1,2 +1,15 @@
-<h1>Bienvenue Utilisateur {{ auth()->user()->prenom }}</h1>
-<a href="{{ route('logout') }}">Se déconnecter</a>
+@extends('layouts.app')
+
+@push('styles')
+    <!-- Ajoutez ici vos styles spécifiques si besoin -->
+@endpush
+
+@section('content')
+
+
+@endsection
+
+
+@push('scripts')
+    <!-- Ajoutez ici vos styles spécifiques si besoin -->
+@endpush

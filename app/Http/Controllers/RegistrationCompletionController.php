@@ -34,6 +34,7 @@ class RegistrationCompletionController extends Controller
         $data = $request->validate([
             'telephone'              => 'required|string|unique:users,telephone',
             'password'               => 'required|string|min:8|confirmed',
+            'grade_id'         => 'nullable|exists:grades,id',
         ]);
 
         // Création de l'utilisateur
@@ -46,6 +47,7 @@ class RegistrationCompletionController extends Controller
             'password'         => Hash::make($data['password']),
             'role'             => 'user',
             'etablissement_id' => $demande->etablissement_id,
+            'grade_id'         => $data['grade_id'],
         ]);
 
         // On passe la demande au statut "account_created"

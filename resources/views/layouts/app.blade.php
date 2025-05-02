@@ -612,10 +612,24 @@
                         @if(auth()->user()->role === 'user')
                             <!-- menu spécifique utilisateur -->
                             <li class="nav-item">
-                                <a class="nav-link menu-link" href="#">
-                                    <i class="ri-user-line"></i> <span>Mes informations</span>
-                                </a>
-                            </li>
+                            <a 
+                            class="nav-link menu-link {{ request()->routeIs('user.formations.*') ? 'active' : '' }}" 
+                            href="{{ route('user.formations.index') }}"
+                            >
+                                <i class="ri-folder-line"></i> 
+                                <span>Liste des formations</span>
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a 
+                            class="nav-link menu-link" 
+                            href="#"
+                            >
+                                <i class="ri-user-line"></i> 
+                                <span>Mes informations</span>
+                            </a>
+                        </li>
                         @elseif(auth()->user()->role === 'etab')
                             <!-- menu spécifique validateur établissement -->
                             <li class="nav-item">

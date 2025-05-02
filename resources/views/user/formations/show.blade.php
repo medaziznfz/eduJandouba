@@ -1,14 +1,13 @@
 @extends('layouts.app')
 
 @section('content')
-
-    {{-- Boutons Éditer / Retour placés avant le header --}}
+    {{-- Boutons S’inscrire / Retour avant le header --}}
     <div class="row mb-3 position-relative" style="z-index:2;">
         <div class="col text-end">
-            <a href="{{ route('univ.formations.edit', $formation) }}" class="btn btn-sm btn-warning me-2">
-                <i class="ri-pencil-line align-bottom"></i> Éditer
-            </a>
-            <a href="{{ route('univ.formations.index') }}" class="btn btn-sm btn-secondary">
+            <button id="inscrire-action-btn" class="btn btn-sm btn-success me-2">
+                <i class="ri-pencil-fill align-bottom"></i> S’inscrire
+            </button>
+            <a href="{{ route('user.formations.index') }}" class="btn btn-sm btn-secondary">
                 <i class="ri-arrow-go-back-line align-bottom"></i> Retour
             </a>
         </div>
@@ -20,11 +19,11 @@
             <div class="card mt-n4 mx-n4">
                 <div class="bg-warning-subtle">
                     <div class="card-body pb-0 px-4 d-flex align-items-center">
-                        {{-- Image (avatar) ajustée selon template --}}
+                        {{-- Avatar / vignette --}}
                         <div class="avatar-md me-3">
                             <div class="avatar-title bg-white rounded-circle">
                                 @if($formation->thumbnail)
-                                    <img src="{{ asset('storage/'.$formation->thumbnail) }}"
+                                    <img src="{{ asset('storage/' . $formation->thumbnail) }}"
                                          alt="Vignette"
                                          class="avatar-xs rounded-circle"
                                          style="object-fit:cover;">
@@ -36,26 +35,39 @@
                         <div>
                             <h4 class="fw-bold mb-1">{{ $formation->titre }}</h4>
                             <div class="hstack gap-3 flex-wrap">
-                                <div><i class="ri-building-line align-bottom me-1"></i>{{ optional($formation->etablissement)->nom ?? 'Indépendant' }}</div>
+                                <div>
+                                    <i class="ri-building-line align-bottom me-1"></i>
+                                    {{ optional($formation->etablissement)->nom ?? 'Indépendant' }}
+                                </div>
                                 <div class="vr"></div>
-                                <div>Date création : <span class="fw-medium">{{ $formation->created_at->format('d M, Y') }}</span></div>
+                                <div>Date création :
+                                    <span class="fw-medium">{{ $formation->created_at->format('d M, Y') }}</span>
+                                </div>
                                 <div class="vr"></div>
-                                <div>Date limite : <span class="fw-medium">{{ $formation->deadline->format('d M, Y') }}</span></div>
+                                <div>Date limite :
+                                    <span class="fw-medium">{{ $formation->deadline->format('d M, Y') }}</span>
+                                </div>
                                 <div class="vr"></div>
-                                <div class="badge rounded-pill bg-{{ $formation->status=='available'?'success':'warning' }} fs-12">
-                                    {{ ucfirst(str_replace('_',' ',$formation->status)) }}
+                                <div class="badge rounded-pill {{ $formation->status_class }} fs-12">
+                                    {{ $formation->status_label }}
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    {{-- Onglets --}}
+                    {{-- Les onglets --}}
                     <ul class="nav nav-tabs-custom border-bottom-0 px-4" role="tablist">
                         <li class="nav-item">
-                            <a class="nav-link active fw-semibold" data-bs-toggle="tab" href="#tab-details" role="tab">Détails</a>
+                            <a id="details-tab-btn" class="nav-link active fw-semibold"
+                               data-bs-toggle="tab" href="#tab-details" role="tab">
+                                Détails
+                            </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link fw-semibold" data-bs-toggle="tab" href="#tab-launch" role="tab">Lancer formation</a>
+                            <a id="inscrire-tab-btn" class="nav-link fw-semibold"
+                               data-bs-toggle="tab" href="#tab-inscrire" role="tab">
+                                S’inscrire
+                            </a>
                         </li>
                     </ul>
                 </div>
@@ -75,7 +87,7 @@
                         {{-- Colonne principale --}}
                         <div class="col-xl-9 col-lg-8">
 
-                            {{-- Carte Résumé --}}
+                            {{-- Résumé --}}
                             <div class="card mb-4">
                                 <div class="card-body">
                                     <h6 class="fw-semibold text-uppercase mb-3">Résumé</h6>
@@ -85,13 +97,27 @@
                                 </div>
                             </div>
 
-                            {{-- Carte Informations --}}
+                            {{-- Informations --}}
                             <div class="card">
                                 <div class="card-body">
                                     <h6 class="fw-semibold text-uppercase mb-3">Informations</h6>
                                     <dl class="row mb-0">
                                         <dt class="col-sm-3 text-muted">Description</dt>
                                         <dd class="col-sm-9">{{ $formation->description }}</dd>
+
+                                        <dt class="col-sm-3 text-muted">Mode</dt>
+                                        <dd class="col-sm-9">
+                                            {{ $formation->mode === 'a_distance' ? 'À distance' : 'Présentiel' }}
+                                        </dd>
+
+                                        @if($formation->mode === 'a_distance' && $formation->link)
+                                            <dt class="col-sm-3 text-muted">Lien</dt>
+                                            <dd class="col-sm-9">
+                                                <a href="{{ $formation->link }}" target="_blank">
+                                                    {{ $formation->link }}
+                                                </a>
+                                            </dd>
+                                        @endif
 
                                         <dt class="col-sm-3 text-muted">Durée</dt>
                                         <dd class="col-sm-9">{{ $formation->duree }}</dd>
@@ -106,7 +132,9 @@
                                         <dd class="col-sm-9">{{ $formation->sessions }}</dd>
 
                                         <dt class="col-sm-3 text-muted">Grades</dt>
-                                        <dd class="col-sm-9">{{ $formation->grades->pluck('nom')->join(', ') }}</dd>
+                                        <dd class="col-sm-9">
+                                            {{ $formation->grades->pluck('nom')->join(', ') }}
+                                        </dd>
                                     </dl>
                                 </div>
                             </div>
@@ -114,12 +142,18 @@
 
                         {{-- Colonne latérale --}}
                         <div class="col-xl-3 col-lg-4">
-                            {{-- Statistiques rapides --}}
+                            {{-- Stats rapides --}}
                             <div class="card mb-4">
                                 <div class="card-body">
                                     <h6 class="fw-semibold text-uppercase mb-3">Statistiques</h6>
-                                    <p class="mb-2"><i class="ri-list-check align-bottom me-1"></i> Demandes : <span class="fw-medium">{{ $formation->nbre_demandeur }}</span></p>
-                                    <p class="mb-2"><i class="ri-user-2-line align-bottom me-1"></i> Inscrits : <span class="fw-medium">{{ $formation->nbre_inscrit }}</span></p>
+                                    <p class="mb-2">
+                                        <i class="ri-list-check align-bottom me-1"></i>
+                                        Demandes : <span class="fw-medium">{{ $formation->nbre_demandeur }}</span>
+                                    </p>
+                                    <p class="mb-2">
+                                        <i class="ri-user-2-line align-bottom me-1"></i>
+                                        Inscrits : <span class="fw-medium">{{ $formation->nbre_inscrit }}</span>
+                                    </p>
                                 </div>
                             </div>
                             {{-- Progression --}}
@@ -127,7 +161,9 @@
                                 <div class="card-body">
                                     <h6 class="fw-semibold text-uppercase mb-3">Progression</h6>
                                     @php
-                                        $pct = $formation->capacite ? round($formation->nbre_inscrit * 100 / $formation->capacite) : 0;
+                                        $pct = $formation->capacite
+                                            ? round($formation->nbre_inscrit * 100 / $formation->capacite)
+                                            : 0;
                                     @endphp
                                     <div class="progress animated-progress mb-2" style="height:6px;">
                                         <div class="progress-bar bg-success" role="progressbar"
@@ -141,21 +177,23 @@
                         </div>
 
                     </div><!-- end row -->
-                </div><!-- end tab-pane -->
+                </div><!-- end tab-details -->
 
-                {{-- Onglet Lancer formation --}}
-                <div class="tab-pane fade" id="tab-launch" role="tabpanel">
+                {{-- Onglet S’inscrire --}}
+                <div class="tab-pane fade" id="tab-inscrire" role="tabpanel">
                     <div class="card text-center">
                         <div class="card-body py-5">
-                            <i class="ri-rocket-line fs-48 text-success mb-3"></i>
-                            <h5 class="mb-1">Prêt à démarrer ?</h5>
-                            <p class="text-muted mb-4">Cliquez ci-dessous pour lancer la session de formation.</p>
-                            <button class="btn btn-success btn-lg mb-5">
-                                <i class="ri-play-line align-bottom"></i> Démarrer
+                            <i class="ri-user-add-line fs-48 text-primary mb-3"></i>
+                            <h5 class="mb-1">Inscription à la formation</h5>
+                            <p class="text-muted mb-4">
+                                Veuillez cliquer ci-dessous pour vous inscrire à cette formation.
+                            </p>
+                            <button class="btn btn-primary btn-lg mb-5">
+                                <i class="ri-pencil-fill align-bottom"></i> S’inscrire
                             </button>
                         </div>
                     </div>
-                </div><!-- end tab-pane -->
+                </div><!-- end tab-inscrire -->
 
             </div><!-- end tab-content -->
         </div><!-- end col -->
@@ -164,8 +202,21 @@
 
 @push('scripts')
 <script>
-    document.addEventListener('DOMContentLoaded', function(){
-        feather.replace();
+    document.addEventListener('DOMContentLoaded', () => {
+        // 1) Feather icons
+        if (window.feather) feather.replace();
+
+        // 2) Top “S’inscrire” button → switch to the inscription tab
+        document.getElementById('inscrire-action-btn')
+            .addEventListener('click', () => {
+                document.getElementById('inscrire-tab-btn').click();
+            });
+
+        // 3) If URL has ?tab=inscrire, open that tab on page load
+        const params = new URLSearchParams(window.location.search);
+        if (params.get('tab') === 'inscrire') {
+            document.getElementById('inscrire-tab-btn').click();
+        }
     });
 </script>
 @endpush

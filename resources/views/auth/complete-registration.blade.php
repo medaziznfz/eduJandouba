@@ -10,7 +10,7 @@
       data-theme-colors="default">
 <head>
     <meta charset="utf-8" />
-    <title>Compléter votre inscription | ONPC</title>
+    <title>Compléter votre inscription | JANDOUBA</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">
 
@@ -23,7 +23,7 @@
 
 <body>
     <div class="auth-page-wrapper pt-5">
-        <!-- fond & overlay identique à vos autres pages auth -->
+        <!-- fond & overlay identique aux autres pages auth -->
         <div class="auth-one-bg-position auth-one-bg" id="auth-particles">
             <div class="bg-overlay"></div>
             <div class="shape">
@@ -39,7 +39,7 @@
                         <a href="#" class="d-inline-block auth-logo">
                             <img src="{{ asset('assets/images/logo-light.png') }}" alt="" height="20">
                         </a>
-                        <p class="mt-3 fs-15 fw-medium">Complétez votre inscription ONPC</p>
+                        <p class="mt-3 fs-15 fw-medium">Complétez votre inscription JANDOUBA</p>
                     </div>
                 </div>
 
@@ -70,28 +70,41 @@
                                           class="needs-validation" novalidate>
                                         @csrf
 
-                                        {{-- Chiffres pré-remplis, readonly --}}
+                                        {{-- Prénom --}}
                                         <div class="mb-3">
                                             <label class="form-label">Prénom</label>
                                             <input type="text" class="form-control" value="{{ $demande->prenom }}" readonly>
                                         </div>
 
+                                        {{-- Nom --}}
                                         <div class="mb-3">
                                             <label class="form-label">Nom</label>
                                             <input type="text" class="form-control" value="{{ $demande->nom }}" readonly>
                                         </div>
 
+                                        {{-- Email --}}
                                         <div class="mb-3">
                                             <label class="form-label">Adresse email</label>
                                             <input type="email" class="form-control" value="{{ $demande->email }}" readonly>
                                         </div>
 
+                                        {{-- CIN --}}
                                         <div class="mb-3">
                                             <label class="form-label">CIN</label>
                                             <input type="text" class="form-control" value="{{ $demande->cin }}" readonly>
                                         </div>
 
-                                        {{-- Nouveau champ Téléphone --}}
+                                        {{-- Grade (readonly + hidden) --}}
+                                        <div class="mb-3">
+                                            <label class="form-label">Filière / Grade</label>
+                                            <input type="text"
+                                                   class="form-control"
+                                                   value="{{ optional($demande->grade)->nom ?? 'Toutes les filières' }}"
+                                                   readonly>
+                                            <input type="hidden" name="grade_id" value="{{ $demande->grade_id }}">
+                                        </div>
+
+                                        {{-- Téléphone --}}
                                         <div class="mb-3">
                                             <label for="telephone" class="form-label">Téléphone <span class="text-danger">*</span></label>
                                             <input type="text"
@@ -121,7 +134,9 @@
 
                                         {{-- Confirmation --}}
                                         <div class="mb-4">
-                                            <label for="password_confirmation" class="form-label">Confirmer mot de passe <span class="text-danger">*</span></label>
+                                            <label for="password_confirmation" class="form-label">
+                                                Confirmer mot de passe <span class="text-danger">*</span>
+                                            </label>
                                             <input type="password"
                                                    class="form-control"
                                                    id="password_confirmation"
@@ -133,6 +148,7 @@
                                             </div>
                                         </div>
 
+                                        {{-- Bouton soumettre --}}
                                         <div class="mt-4">
                                             <button class="btn btn-success w-100" type="submit">
                                                 Créer mon compte
@@ -157,7 +173,7 @@
                 <div class="row">
                     <div class="col-lg-12 text-center">
                         <p class="mb-0 text-muted">
-                            &copy; <script>document.write(new Date().getFullYear())</script> ONPC. Tous droits réservés.
+                            &copy; <script>document.write(new Date().getFullYear())</script> JANDOUBA. Tous droits réservés.
                         </p>
                     </div>
                 </div>
