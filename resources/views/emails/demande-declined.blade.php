@@ -6,4 +6,4 @@
     {{ $reason }}
 </blockquote>
 
-<p>Merci pour votre compréhension.<br>L’équipe ONPC</p>
+<p>Merci pour votre compréhension.<br>L’équipe JANDOUBA University</p>

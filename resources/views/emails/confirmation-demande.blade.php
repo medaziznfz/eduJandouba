@@ -8,4 +8,4 @@
     </a>
 </p>
 
-<p>Merci,<br>L’équipe ONPC</p>
+<p>Merci,<br>L’équipe JANDOUBA University</p>
