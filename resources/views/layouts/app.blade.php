@@ -633,10 +633,11 @@
                         @elseif(auth()->user()->role === 'etab')
                             <!-- menu spécifique validateur établissement -->
                             <li class="nav-item">
-                                <a class="nav-link menu-link" href="#">
-                                    <i class="ri-file-search-line"></i> <span>Valider les demandes</span>
+                                <a class="nav-link menu-link" href="{{ route('etab.applications.index') }}">
+                                    <i class="ri-file-search-line"></i>
+                                    <span>Valider les demandes</span>
                                 </a>
-                            </li>
+                                </li>
                         @elseif(auth()->user()->role === 'univ')
                         <li class="nav-item">
                             <a class="nav-link menu-link" href="#">

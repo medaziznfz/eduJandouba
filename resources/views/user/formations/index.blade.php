@@ -48,7 +48,9 @@
                     {{-- en-tête --}}
                     <div class="d-flex mb-3">
                         <div class="flex-grow-1">
-                            <p class="text-muted mb-0">Mis à jour {{ $formation->updated_at->diffForHumans() }}</p>
+                            <p class="text-muted mb-0">
+                                Créé {{ $formation->created_at->diffForHumans() }}
+                            </p>
                         </div>
                         <div class="flex-shrink-0">
                             <div class="dropdown">

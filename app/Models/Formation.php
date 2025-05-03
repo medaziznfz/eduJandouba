@@ -71,4 +71,16 @@ class Formation extends Model
     {
         return $this->belongsTo(Etablissement::class);
     }
+
+    public function applicants()
+    {
+        return $this->belongsToMany(User::class)
+                    ->withPivot('etab_confirmed', 'univ_confirmed')
+                    ->withTimestamps();
+    }
+
+    public function applicationRequests()
+    {
+        return $this->hasMany(ApplicationRequest::class);
+    }
 }

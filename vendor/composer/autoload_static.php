@@ -336,8 +336,8 @@ class ComposerStaticInit88970a0117c062eed55fa8728fc43833
         ),
         'Psr\\Http\\Message\\' => 
         array (
-            0 => __DIR__ . '/..' . '/psr/http-message/src',
-            1 => __DIR__ . '/..' . '/psr/http-factory/src',
+            0 => __DIR__ . '/..' . '/psr/http-factory/src',
+            1 => __DIR__ . '/..' . '/psr/http-message/src',
         ),
         'Psr\\Http\\Client\\' => 
         array (
@@ -377,8 +377,8 @@ class ComposerStaticInit88970a0117c062eed55fa8728fc43833
         ),
         'League\\Uri\\' => 
         array (
-            0 => __DIR__ . '/..' . '/league/uri-interfaces',
-            1 => __DIR__ . '/..' . '/league/uri',
+            0 => __DIR__ . '/..' . '/league/uri',
+            1 => __DIR__ . '/..' . '/league/uri-interfaces',
         ),
         'League\\MimeTypeDetection\\' => 
         array (
@@ -516,9 +516,27 @@ class ComposerStaticInit88970a0117c062eed55fa8728fc43833
     );
 
     public static $classMap = array (
+        'App\\Http\\Controllers\\ApplicationController' => __DIR__ . '/../..' . '/app/Http/Controllers/ApplicationController.php',
+        'App\\Http\\Controllers\\AuthController' => __DIR__ . '/../..' . '/app/Http/Controllers/AuthController.php',
         'App\\Http\\Controllers\\Controller' => __DIR__ . '/../..' . '/app/Http/Controllers/Controller.php',
+        'App\\Http\\Controllers\\EtabDashboardController' => __DIR__ . '/../..' . '/app/Http/Controllers/EtabDashboardController.php',
+        'App\\Http\\Controllers\\FormationController' => __DIR__ . '/../..' . '/app/Http/Controllers/FormationController.php',
+        'App\\Http\\Controllers\\RegistrationCompletionController' => __DIR__ . '/../..' . '/app/Http/Controllers/RegistrationCompletionController.php',
+        'App\\Http\\Controllers\\RequestController' => __DIR__ . '/../..' . '/app/Http/Controllers/RequestController.php',
+        'App\\Http\\Controllers\\UniversityValidationController' => __DIR__ . '/../..' . '/app/Http/Controllers/UniversityValidationController.php',
+        'App\\Http\\Controllers\\UserFormationController' => __DIR__ . '/../..' . '/app/Http/Controllers/UserFormationController.php',
+        'App\\Http\\Middleware\\RoleMiddleware' => __DIR__ . '/../..' . '/app/Http/Middleware/RoleMiddleware.php',
+        'App\\Mail\\ConfirmationDemandeMail' => __DIR__ . '/../..' . '/app/Mail/ConfirmationDemandeMail.php',
+        'App\\Mail\\DemandeDeclinedMail' => __DIR__ . '/../..' . '/app/Mail/DemandeDeclinedMail.php',
+        'App\\Models\\ApplicationRequest' => __DIR__ . '/../..' . '/app/Models/ApplicationRequest.php',
+        'App\\Models\\Demande' => __DIR__ . '/../..' . '/app/Models/Demande.php',
+        'App\\Models\\Etablissement' => __DIR__ . '/../..' . '/app/Models/Etablissement.php',
+        'App\\Models\\Formation' => __DIR__ . '/../..' . '/app/Models/Formation.php',
+        'App\\Models\\Grade' => __DIR__ . '/../..' . '/app/Models/Grade.php',
         'App\\Models\\User' => __DIR__ . '/../..' . '/app/Models/User.php',
+        'App\\Policies\\ApplicationRequestPolicy' => __DIR__ . '/../..' . '/app/Policies/ApplicationRequestPolicy.php',
         'App\\Providers\\AppServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AppServiceProvider.php',
+        'App\\Providers\\AuthServiceProvider' => __DIR__ . '/../..' . '/app/Providers/AuthServiceProvider.php',
         'Attribute' => __DIR__ . '/..' . '/symfony/polyfill-php80/Resources/stubs/Attribute.php',
         'Brick\\Math\\BigDecimal' => __DIR__ . '/..' . '/brick/math/src/BigDecimal.php',
         'Brick\\Math\\BigInteger' => __DIR__ . '/..' . '/brick/math/src/BigInteger.php',
@@ -638,6 +656,8 @@ class ComposerStaticInit88970a0117c062eed55fa8728fc43833
         'Cron\\MonthField' => __DIR__ . '/..' . '/dragonmantank/cron-expression/src/Cron/MonthField.php',
         'Database\\Factories\\UserFactory' => __DIR__ . '/../..' . '/database/factories/UserFactory.php',
         'Database\\Seeders\\DatabaseSeeder' => __DIR__ . '/../..' . '/database/seeders/DatabaseSeeder.php',
+        'Database\\Seeders\\EtablissementSeeder' => __DIR__ . '/../..' . '/database/seeders/EtablissementSeeder.php',
+        'Database\\Seeders\\GradeSeeder' => __DIR__ . '/../..' . '/database/seeders/GradeSeeder.php',
         'DateError' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/DateError.php',
         'DateException' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/DateException.php',
         'DateInvalidOperationException' => __DIR__ . '/..' . '/symfony/polyfill-php83/Resources/stubs/DateInvalidOperationException.php',

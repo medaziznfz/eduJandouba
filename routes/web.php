@@ -8,6 +8,7 @@ use App\Http\Controllers\RegistrationCompletionController;
 use App\Http\Controllers\FormationController;
 use App\Models\Etablissement;
 use App\Http\Controllers\UserFormationController;
+use App\Http\Controllers\ApplicationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -57,6 +58,11 @@ Route::middleware(['auth','role:user'])->group(function () {
     // Détails d’une formation
     Route::get('/user/formations/{formation}', [UserFormationController::class, 'show'])
          ->name('user.formations.show');
+
+     Route::post(
+          '/user/formations/{formation}/request',
+          [UserFormationController::class, 'request']
+      )->name('user.formations.request');
 });
 
 // 🔹 Dashboard validateur établissement (« etab »)
@@ -80,6 +86,29 @@ Route::middleware(['auth','role:etab'])->group(function () {
          [EtabDashboardController::class, 'batchDestroy']
     )->name('etab.demandes.batchDestroy');
 });
+
+// ▸ Routes for “etab” role: APPLICATIONS
+
+// routes/web.php
+
+Route::middleware(['auth','role:etab'])
+     ->prefix('etab')                // ← URL will be /etab/applications
+     ->name('etab.')                 // ← all route names start with etab.
+     ->group(function () {
+         Route::get('applications', [ApplicationController::class, 'index'])
+              ->name('applications.index');
+ 
+         Route::post('applications/{application}/accept', [ApplicationController::class, 'accept'])
+              ->name('applications.accept');
+ 
+         Route::post('applications/{application}/reject', [ApplicationController::class, 'reject'])
+              ->name('applications.reject');
+              
+          Route::delete('applications/{application}', [ApplicationController::class, 'destroy'])
+              ->name('applications.destroy');
+     });
+
+
 
 Route::middleware(['auth','role:univ'])
      ->prefix('univ')

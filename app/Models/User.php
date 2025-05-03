@@ -52,4 +52,16 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Grade::class);
     }
+
+    public function requestedFormations()
+    {
+        return $this->belongsToMany(Formation::class)
+                    ->withPivot('etab_confirmed', 'univ_confirmed')
+                    ->withTimestamps();
+    }
+
+    public function applicationRequests()
+    {
+        return $this->hasMany(ApplicationRequest::class);
+    }
 }

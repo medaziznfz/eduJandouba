@@ -1,10 +1,14 @@
 @extends('layouts.app')
 
 @section('content')
-    {{-- Boutons S’inscrire / Retour avant le header --}}
+<div class="container-fluid py-4">
+    {{-- Boutons S’inscrire / Retour --}}
     <div class="row mb-3 position-relative" style="z-index:2;">
         <div class="col text-end">
-            <button id="inscrire-action-btn" class="btn btn-sm btn-success me-2">
+            <button
+                id="inscrire-action-btn"
+                class="btn btn-sm btn-success me-2"
+                {{ $formation->status !== 'available' ? 'disabled' : '' }}>
                 <i class="ri-pencil-fill align-bottom"></i> S’inscrire
             </button>
             <a href="{{ route('user.formations.index') }}" class="btn btn-sm btn-secondary">
@@ -19,11 +23,11 @@
             <div class="card mt-n4 mx-n4">
                 <div class="bg-warning-subtle">
                     <div class="card-body pb-0 px-4 d-flex align-items-center">
-                        {{-- Avatar / vignette --}}
+                        {{-- Vignette --}}
                         <div class="avatar-md me-3">
                             <div class="avatar-title bg-white rounded-circle">
                                 @if($formation->thumbnail)
-                                    <img src="{{ asset('storage/' . $formation->thumbnail) }}"
+                                    <img src="{{ asset('storage/'.$formation->thumbnail) }}"
                                          alt="Vignette"
                                          class="avatar-xs rounded-circle"
                                          style="object-fit:cover;">
@@ -35,8 +39,7 @@
                         <div>
                             <h4 class="fw-bold mb-1">{{ $formation->titre }}</h4>
                             <div class="hstack gap-3 flex-wrap">
-                                <div>
-                                    <i class="ri-building-line align-bottom me-1"></i>
+                                <div><i class="ri-building-line align-bottom me-1"></i>
                                     {{ optional($formation->etablissement)->nom ?? 'Indépendant' }}
                                 </div>
                                 <div class="vr"></div>
@@ -55,7 +58,7 @@
                         </div>
                     </div>
 
-                    {{-- Les onglets --}}
+                    {{-- Onglets --}}
                     <ul class="nav nav-tabs-custom border-bottom-0 px-4" role="tablist">
                         <li class="nav-item">
                             <a id="details-tab-btn" class="nav-link active fw-semibold"
@@ -64,8 +67,12 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a id="inscrire-tab-btn" class="nav-link fw-semibold"
-                               data-bs-toggle="tab" href="#tab-inscrire" role="tab">
+                            <a
+                              id="inscrire-tab-btn"
+                              class="nav-link fw-semibold {{ $formation->status !== 'available' ? 'disabled text-muted' : '' }}"
+                              {{ $formation->status === 'available' ? 'data-bs-toggle=tab' : '' }}
+                              href="#tab-inscrire"
+                              role="tab">
                                 S’inscrire
                             </a>
                         </li>
@@ -83,20 +90,14 @@
                 {{-- Onglet Détails --}}
                 <div class="tab-pane fade show active" id="tab-details" role="tabpanel">
                     <div class="row gx-4">
-
-                        {{-- Colonne principale --}}
                         <div class="col-xl-9 col-lg-8">
-
                             {{-- Résumé --}}
                             <div class="card mb-4">
                                 <div class="card-body">
                                     <h6 class="fw-semibold text-uppercase mb-3">Résumé</h6>
-                                    <div class="text-body">
-                                        {!! $formation->summary !!}
-                                    </div>
+                                    {!! $formation->summary !!}
                                 </div>
                             </div>
-
                             {{-- Informations --}}
                             <div class="card">
                                 <div class="card-body">
@@ -140,9 +141,8 @@
                             </div>
                         </div>
 
-                        {{-- Colonne latérale --}}
+                        {{-- Statistiques & progression --}}
                         <div class="col-xl-3 col-lg-4">
-                            {{-- Stats rapides --}}
                             <div class="card mb-4">
                                 <div class="card-body">
                                     <h6 class="fw-semibold text-uppercase mb-3">Statistiques</h6>
@@ -156,67 +156,123 @@
                                     </p>
                                 </div>
                             </div>
-                            {{-- Progression --}}
                             <div class="card">
                                 <div class="card-body">
                                     <h6 class="fw-semibold text-uppercase mb-3">Progression</h6>
                                     @php
                                         $pct = $formation->capacite
-                                            ? round($formation->nbre_inscrit * 100 / $formation->capacite)
+                                            ? round(100 * $formation->nbre_inscrit / $formation->capacite)
                                             : 0;
                                     @endphp
-                                    <div class="progress animated-progress mb-2" style="height:6px;">
-                                        <div class="progress-bar bg-success" role="progressbar"
-                                             style="width: {{ $pct }}%;"
-                                             aria-valuenow="{{ $pct }}"
-                                             aria-valuemin="0" aria-valuemax="100"></div>
+                                    <div class="progress mb-2" style="height:6px;">
+                                        <div class="progress-bar bg-success"
+                                             style="width: {{ $pct }}%;"></div>
                                     </div>
                                     <small class="text-muted">{{ $pct }}% des places remplies</small>
                                 </div>
                             </div>
                         </div>
-
-                    </div><!-- end row -->
+                    </div>
                 </div><!-- end tab-details -->
 
                 {{-- Onglet S’inscrire --}}
                 <div class="tab-pane fade" id="tab-inscrire" role="tabpanel">
                     <div class="card text-center">
                         <div class="card-body py-5">
-                            <i class="ri-user-add-line fs-48 text-primary mb-3"></i>
-                            <h5 class="mb-1">Inscription à la formation</h5>
-                            <p class="text-muted mb-4">
-                                Veuillez cliquer ci-dessous pour vous inscrire à cette formation.
-                            </p>
-                            <button class="btn btn-primary btn-lg mb-5">
-                                <i class="ri-pencil-fill align-bottom"></i> S’inscrire
-                            </button>
+                            @if($formation->status !== 'available')
+                                <i class="ri-lock-line fs-48 text-secondary mb-3"></i>
+                                <h5 class="mb-1">Inscriptions fermées</h5>
+                                <p class="text-muted">Vous ne pouvez plus vous inscrire à cette formation.</p>
+                            @else
+                                <i class="ri-user-add-line fs-48 text-primary mb-3"></i>
+                                <h5 class="mb-1">Inscription à la formation</h5>
+                                <p class="text-muted mb-4">
+                                    Cliquez ci-dessous pour faire votre demande d’inscription.
+                                </p>
+
+                                @if($alreadyRequested)
+                                    <button class="btn btn-secondary btn-lg mb-2" disabled>
+                                        Demande déjà envoyée
+                                    </button>
+                                    <div>
+                                        <small>Status actuel :
+                                            <span class="badge bg-info fs-6 px-3 py-1">
+                                                {{ $statusLabels[$requestStatus] ?? $statusLabels[0] }}
+                                            </span>
+                                        </small>
+                                    </div>
+                                @else
+                                    <form id="inscription-form" method="POST"
+                                          action="{{ route('user.formations.request', $formation) }}">
+                                        @csrf
+                                        <button id="inscription-btn"
+                                                class="btn btn-primary btn-lg mb-5">
+                                            <i class="ri-pencil-fill align-bottom"></i> S’inscrire
+                                        </button>
+                                    </form>
+                                @endif
+                            @endif
                         </div>
                     </div>
                 </div><!-- end tab-inscrire -->
 
             </div><!-- end tab-content -->
-        </div><!-- end col -->
+        </div>
     </div><!-- end row -->
+</div>
 @endsection
 
 @push('scripts')
-<script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
     document.addEventListener('DOMContentLoaded', () => {
-        // 1) Feather icons
         if (window.feather) feather.replace();
 
-        // 2) Top “S’inscrire” button → switch to the inscription tab
-        document.getElementById('inscrire-action-btn')
-            .addEventListener('click', () => {
+        // Top “S’inscrire” bouton → onglet inscription
+        document.getElementById('inscrire-action-btn')?.addEventListener('click', () => {
+            if ("{{ $formation->status }}" === 'available') {
                 document.getElementById('inscrire-tab-btn').click();
-            });
+            }
+        });
 
-        // 3) If URL has ?tab=inscrire, open that tab on page load
+        // ?tab=inscrire auto-open
         const params = new URLSearchParams(window.location.search);
         if (params.get('tab') === 'inscrire') {
             document.getElementById('inscrire-tab-btn').click();
         }
+
+        // Confirmation SweetAlert avant submit
+        const form = document.getElementById('inscription-form');
+        form?.addEventListener('submit', e => {
+            e.preventDefault();
+            Swal.fire({
+                title: 'Confirmer votre demande',
+                text: "Voulez-vous vraiment vous inscrire ?",
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Oui, confirmer',
+                cancelButtonText: 'Annuler'
+            }).then(result => {
+                if (result.isConfirmed) form.submit();
+            });
+        });
+
+        // Afficher les flash via SweetAlert, et rester sur l’onglet inscription
+        @if(session('success'))
+            Swal.fire({ icon:'success', title:'Succès', text:"{{ session('success') }}", didClose() {
+                document.getElementById('inscrire-tab-btn').click();
+            }});
+        @endif
+        @if(session('error'))
+            Swal.fire({ icon:'error', title:'Erreur', text:"{{ session('error') }}", didClose() {
+                document.getElementById('inscrire-tab-btn').click();
+            }});
+        @endif
+        @if(session('info'))
+            Swal.fire({ icon:'info', title:'Info', text:"{{ session('info') }}", didClose() {
+                document.getElementById('inscrire-tab-btn').click();
+            }});
+        @endif
     });
-</script>
+    </script>
 @endpush
