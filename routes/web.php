@@ -9,6 +9,7 @@ use App\Http\Controllers\FormationController;
 use App\Models\Etablissement;
 use App\Http\Controllers\UserFormationController;
 use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\UniversityApplicationController;
 
 /*
 |--------------------------------------------------------------------------
@@ -108,6 +109,23 @@ Route::middleware(['auth','role:etab'])
               ->name('applications.destroy');
      });
 
+
+
+Route::middleware(['auth','role:univ'])
+     ->prefix('univ')->name('univ.')
+     ->group(function(){
+         Route::get('applications', [UniversityApplicationController::class,'index'])
+              ->name('applications.index');
+         Route::post('applications/{application}/accept',  [UniversityApplicationController::class,'accept'])
+              ->name('applications.accept');
+         Route::post('applications/{application}/waitlist',[UniversityApplicationController::class,'waitlist'])
+              ->name('applications.waitlist');
+         Route::post('applications/{application}/reject',  [UniversityApplicationController::class,'reject'])
+              ->name('applications.reject');
+         Route::delete('applications/{application}',     [UniversityApplicationController::class,'destroy'])
+              ->name('applications.destroy');
+     });
+ 
 
 
 Route::middleware(['auth','role:univ'])

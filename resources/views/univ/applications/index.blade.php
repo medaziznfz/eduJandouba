@@ -25,29 +25,27 @@
           <li class="nav-item">
             <a class="nav-link active" data-status="all" href="#">Toutes</a>
           </li>
-          {{-- Par statut (0 = En attente, 1 = Acceptée, 2 = Rejetée) --}}
+          {{-- Par statut --}}
           @foreach($statusLabels as $code => $label)
-            @if($code !== 3)
-              @php
-                if ($code === 0) {
-                  $count = $applications->where('status', 0)
-                                        ->where('etab_confirmed', false)
-                                        ->count();
-                } elseif ($code === 1) {
-                  $count = $applications->where('etab_confirmed', true)->count();
-                } else { // 2
-                  $count = $applications->where('status', 2)->count();
-                }
-              @endphp
-              <li class="nav-item">
-                <a class="nav-link" data-status="{{ $code }}" href="#">
-                  {{ $label }}
-                  @if($count > 0)
-                    <span class="badge bg-danger align-middle ms-1">{{ $count }}</span>
-                  @endif
-                </a>
-              </li>
-            @endif
+            @php
+              if ($code === 0) {
+                $count = $applications->where('status', 0)
+                                      ->where('univ_confirmed', false)
+                                      ->count();
+              } elseif ($code === 1) {
+                $count = $applications->where('univ_confirmed', true)->count();
+              } else {
+                $count = $applications->where('status', $code)->count();
+              }
+            @endphp
+            <li class="nav-item">
+              <a class="nav-link" data-status="{{ $code }}" href="#">
+                {{ $label }}
+                @if($count > 0)
+                  <span class="badge bg-danger align-middle ms-1">{{ $count }}</span>
+                @endif
+              </a>
+            </li>
           @endforeach
         </ul>
 
@@ -66,7 +64,7 @@
                 <th class="sort" data-sort="applicant">Candidat</th>
                 <th class="sort" data-sort="date">Date de dépôt</th>
                 <th class="sort" data-sort="status">Statut</th>
-                <th class="sort" data-sort="capacity">Capacité</th>
+                <th class="sort" data-sort="cap">Capacité</th>
                 <th class="sort" data-sort="dem">Demandes</th>
                 <th class="sort" data-sort="ins">Inscrits</th>
                 <th class="text-end">Actions</th>
@@ -76,7 +74,7 @@
               @forelse($applications as $app)
                 <tr
                   data-status="{{ $app->status }}"
-                  data-etab-confirmed="{{ $app->etab_confirmed ? '1' : '0' }}"
+                  data-univ-confirmed="{{ $app->univ_confirmed ? '1' : '0' }}"
                 >
                   <th scope="row">
                     <div class="form-check">
@@ -91,11 +89,11 @@
                     <span class="badge
                       {{ $app->status === 0 ? 'bg-warning-subtle text-warning' :
                          ($app->status === 1 ? 'bg-success-subtle text-success' :
-                         'bg-danger-subtle text-danger') }}">
+                         ($app->status === 2 ? 'bg-danger-subtle text-danger' : 'bg-secondary-subtle text-secondary')) }}">
                       {{ $statusLabels[$app->status] }}
                     </span>
                   </td>
-                  <td class="capacity">{{ $app->formation->capacite }}</td>
+                  <td class="cap">{{ $app->formation->capacite }}</td>
                   <td class="dem">{{ $app->formation->nbre_demandeur }}</td>
                   <td class="ins">{{ $app->formation->nbre_inscrit }}</td>
                   <td class="text-end">
@@ -127,21 +125,33 @@
                       </li>
                       {{-- Accepter --}}
                       <li class="list-inline-item" data-bs-toggle="tooltip" title="Accepter">
-                        <form action="{{ route('etab.applications.accept', $app->id) }}"
+                        <form action="{{ route('univ.applications.accept', $app->id) }}"
                               method="POST"
                               class="d-inline-block form-action"
                               data-action="accept">
                           @csrf
                           <button type="submit"
                                   class="btn p-0 m-0 text-success"
-                                  {{ $app->etab_confirmed ? 'disabled' : '' }}>
+                                  {{ $app->univ_confirmed ? 'disabled' : '' }}>
                             <i class="ri-checkbox-multiple-fill fs-16"></i>
+                          </button>
+                        </form>
+                      </li>
+                      {{-- Mettre en liste d’attente --}}
+                      <li class="list-inline-item" data-bs-toggle="tooltip" title="Liste d’attente">
+                        <form action="{{ route('univ.applications.waitlist', $app->id) }}"
+                              method="POST"
+                              class="d-inline-block form-action"
+                              data-action="waitlist">
+                          @csrf
+                          <button type="submit" class="btn p-0 m-0 text-warning">
+                            <i class="ri-list-check fs-16"></i>
                           </button>
                         </form>
                       </li>
                       {{-- Rejeter --}}
                       <li class="list-inline-item" data-bs-toggle="tooltip" title="Rejeter">
-                        <form action="{{ route('etab.applications.reject', $app->id) }}"
+                        <form action="{{ route('univ.applications.reject', $app->id) }}"
                               method="POST"
                               class="d-inline-block form-action"
                               data-action="reject">
@@ -153,7 +163,7 @@
                       </li>
                       {{-- Supprimer --}}
                       <li class="list-inline-item" data-bs-toggle="tooltip" title="Supprimer">
-                        <form action="{{ route('etab.applications.destroy', $app->id) }}"
+                        <form action="{{ route('univ.applications.destroy', $app->id) }}"
                               method="POST"
                               class="d-inline-block form-action"
                               data-action="delete">
@@ -234,32 +244,35 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  const rows = Array.from(document.querySelectorAll('#jobListTable tbody tr'));
+  const rows        = Array.from(document.querySelectorAll('#jobListTable tbody tr'));
   const searchInput = document.getElementById('searchInput');
-  const tabs = document.querySelectorAll('.nav-tabs-custom .nav-link[data-status]');
-  let activeStatus = 'all';
+  const tabs        = document.querySelectorAll('.nav-tabs-custom .nav-link[data-status]');
+  let activeStatus  = 'all';
 
   function filterData() {
     const q = searchInput.value.trim().toLowerCase();
     let anyVisible = false;
+
     rows.forEach(r => {
-      const stat = r.dataset.status;
-      const etabOk = r.dataset.etabConfirmed === '1';
-      let show = false;
+      const stat    = r.dataset.status;
+      const univOk  = r.dataset.univConfirmed === '1';
+      let show      = false;
+
       if (activeStatus === 'all') {
         show = true;
       } else if (activeStatus === '0') {
-        show = stat==='0' && !etabOk;
+        show = stat==='0' && !univOk;
       } else if (activeStatus === '1') {
-        show = etabOk;
+        show = univOk;
       } else {
         show = stat === activeStatus;
       }
-      const txt = r.textContent.toLowerCase();
-      if (q && !txt.includes(q)) show = false;
+
+      if (q && !r.textContent.toLowerCase().includes(q)) show = false;
       r.style.display = show ? '' : 'none';
       if (show) anyVisible = true;
     });
+
     document.querySelector('.noresult').style.display = anyVisible ? 'none' : '';
   }
 
@@ -279,24 +292,30 @@ document.addEventListener('DOMContentLoaded', function() {
   document.querySelectorAll('.form-action').forEach(form => {
     form.addEventListener('submit', e => {
       e.preventDefault();
-      const action = form.dataset.action;
       let title = '';
-      if (action==='accept') title='Accepter cette candidature ?';
-      if (action==='reject') title='Rejeter cette candidature ?';
-      if (action==='delete') title='Supprimer cette candidature ?';
+      switch(form.dataset.action) {
+        case 'accept':   title = 'Accepter cette candidature ?'; break;
+        case 'waitlist': title = 'Mettre en liste d’attente ?'; break;
+        case 'reject':   title = 'Rejeter cette candidature ?'; break;
+        case 'delete':   title = 'Supprimer cette candidature ?'; break;
+      }
       Swal.fire({
         title, icon:'warning',
         showCancelButton:true,
-        confirmButtonText:'Oui', cancelButtonText:'Annuler'
+        confirmButtonText:'Oui',
+        cancelButtonText:'Annuler'
       }).then(res => res.isConfirmed && form.submit());
     });
   });
 
   @if(session('success'))
-    Swal.fire({icon:'success',title:'{{ session('success') }}',timer:2000,showConfirmButton:false});
+    Swal.fire({ icon:'success', title:'{{ session('success') }}', timer:2000, showConfirmButton:false });
   @endif
   @if(session('error'))
-    Swal.fire({icon:'error',title:'{{ session('error') }}',timer:2000,showConfirmButton:false});
+    Swal.fire({ icon:'error',   title:'{{ session('error') }}',   timer:2000, showConfirmButton:false });
+  @endif
+  @if(session('info'))
+    Swal.fire({ icon:'info',    title:'{{ session('info') }}',    timer:2000, showConfirmButton:false });
   @endif
 
   const showModalEl = document.getElementById('showModal');

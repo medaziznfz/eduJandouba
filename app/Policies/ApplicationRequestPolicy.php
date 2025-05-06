@@ -13,8 +13,10 @@ class ApplicationRequestPolicy
      */
     public function viewAny(User $user): bool
     {
-        return $user->role === 'etab';
+        return $user->role === 'etab' || $user->role === 'univ';
     }
+
+
 
     /**
      * Determine whether the user can view a given application request.
@@ -28,11 +30,18 @@ class ApplicationRequestPolicy
     /**
      * Determine whether the user can manage (accept/reject) the request.
      */
-    public function manage(User $validator, ApplicationRequest $app): bool
+    public function manage(User $user, ApplicationRequest $app): bool
     {
-        return $validator->role === 'etab'
-            // compare the validator’s etablissement to the applicant’s etablissement
-            && $validator->etablissement_id === $app->user->etablissement_id;
+        if ($user->role === 'etab') {
+            return $user->etablissement_id === $app->user->etablissement_id;
+        }
+
+        if ($user->role === 'univ') {
+            // only if already approved by etab
+            return $app->etab_confirmed === true;
+        }
+
+        return false;
     }
 
 
