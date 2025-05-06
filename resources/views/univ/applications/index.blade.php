@@ -11,7 +11,7 @@
           <h5 class="card-title mb-3 mb-md-0 flex-grow-1">Candidatures</h5>
           <div class="flex-shrink-0">
             <div class="search-box">
-              <input type="text" id="searchInput" class="form-control" placeholder="Rechercher des candidatures…">
+              <input type="text" class="form-control search" placeholder="Rechercher des candidatures…">
               <i class="ri-search-line search-icon"></i>
             </div>
           </div>
@@ -21,27 +21,17 @@
       {{-- onglets de statut --}}
       <div class="card-body pt-0">
         <ul class="nav nav-tabs nav-tabs-custom nav-success mb-3" role="tablist">
-          {{-- Toutes --}}
-          <li class="nav-item">
-            <a class="nav-link active" data-status="all" href="#">Toutes</a>
-          </li>
-          {{-- Par statut --}}
+          <li class="nav-item"><a class="nav-link active" data-status="all" href="#">Toutes</a></li>
           @foreach($statusLabels as $code => $label)
             @php
-              if ($code === 0) {
-                $count = $applications->where('status', 0)
-                                      ->where('univ_confirmed', false)
-                                      ->count();
-              } elseif ($code === 1) {
-                $count = $applications->where('univ_confirmed', true)->count();
-              } else {
-                $count = $applications->where('status', $code)->count();
-              }
+              if ($code===0) $count = $applications->where('status',0)->where('univ_confirmed',false)->count();
+              elseif ($code===1) $count = $applications->where('univ_confirmed',true)->count();
+              else $count = $applications->where('status',$code)->count();
             @endphp
             <li class="nav-item">
               <a class="nav-link" data-status="{{ $code }}" href="#">
                 {{ $label }}
-                @if($count > 0)
+                @if($count>0)
                   <span class="badge bg-danger align-middle ms-1">{{ $count }}</span>
                 @endif
               </a>
@@ -54,13 +44,10 @@
           <table class="table table-nowrap align-middle" id="jobListTable">
             <thead class="text-muted table-light">
               <tr class="text-uppercase">
-                <th style="width:25px;">
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="checkAll">
-                  </div>
-                </th>
+                <th><div class="form-check"><input class="form-check-input" type="checkbox" id="checkAll"></div></th>
                 <th class="sort" data-sort="id" style="width:140px;">ID candidature</th>
                 <th class="sort" data-sort="formation">Formation</th>
+                <th class="sort" data-sort="cin" style="width:120px;">CIN</th>
                 <th class="sort" data-sort="applicant">Candidat</th>
                 <th class="sort" data-sort="date">Date de dépôt</th>
                 <th class="sort" data-sort="status">Statut</th>
@@ -70,26 +57,20 @@
                 <th class="text-end">Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody class="list">
               @forelse($applications as $app)
-                <tr
-                  data-status="{{ $app->status }}"
-                  data-univ-confirmed="{{ $app->univ_confirmed ? '1' : '0' }}"
-                >
-                  <th scope="row">
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" name="selected[]" value="{{ $app->id }}">
-                    </div>
-                  </th>
+                <tr data-status="{{ $app->status }}" data-univ-confirmed="{{ $app->univ_confirmed?'1':'0' }}">
+                  <th scope="row"><div class="form-check"><input class="form-check-input" type="checkbox" name="selected[]" value="{{ $app->id }}"></div></th>
                   <td class="id">#{{ $app->id }}</td>
                   <td class="formation">{{ $app->formation->titre }}</td>
+                  <td class="cin">{{ $app->user->cin }}</td>
                   <td class="applicant">{{ $app->user->prenom }} {{ $app->user->nom }}</td>
                   <td class="date">{{ $app->created_at->format('d M, Y') }}</td>
                   <td class="status">
                     <span class="badge
-                      {{ $app->status === 0 ? 'bg-warning-subtle text-warning' :
-                         ($app->status === 1 ? 'bg-success-subtle text-success' :
-                         ($app->status === 2 ? 'bg-danger-subtle text-danger' : 'bg-secondary-subtle text-secondary')) }}">
+                      {{ $app->status===0?'bg-warning-subtle text-warning':
+                         ($app->status===1?'bg-success-subtle text-success':
+                         ($app->status===2?'bg-danger-subtle text-danger':'bg-secondary-subtle text-secondary')) }}">
                       {{ $statusLabels[$app->status] }}
                     </span>
                   </td>
@@ -100,10 +81,7 @@
                     <ul class="list-inline hstack gap-2 mb-0">
                       {{-- Voir --}}
                       <li class="list-inline-item" data-bs-toggle="tooltip" title="Voir">
-                        <a href="#"
-                           class="text-primary btn-show"
-                           data-bs-toggle="modal"
-                           data-bs-target="#showModal"
+                        <a href="#" class="text-primary btn-show" data-bs-toggle="modal" data-bs-target="#showModal"
                            data-created="{{ $app->created_at->format('d M, Y H:i') }}"
                            data-user="{{ $app->user->prenom }} {{ $app->user->nom }}"
                            data-email="{{ $app->user->email }}"
@@ -125,65 +103,56 @@
                       </li>
                       {{-- Accepter --}}
                       <li class="list-inline-item" data-bs-toggle="tooltip" title="Accepter">
-                        <form action="{{ route('univ.applications.accept', $app->id) }}"
-                              method="POST"
-                              class="d-inline-block form-action"
-                              data-action="accept">
+                        <form action="{{ route('univ.applications.accept',$app->id) }}" method="POST" class="d-inline-block form-action" data-action="accept">
                           @csrf
-                          <button type="submit"
-                                  class="btn p-0 m-0 text-success"
-                                  {{ $app->univ_confirmed ? 'disabled' : '' }}>
+                          <button type="submit" class="btn p-0 m-0 text-success" @if($app->univ_confirmed&&$app->status===1) disabled @endif>
                             <i class="ri-checkbox-multiple-fill fs-16"></i>
                           </button>
                         </form>
                       </li>
-                      {{-- Mettre en liste d’attente --}}
+                      {{-- Liste d’attente --}}
                       <li class="list-inline-item" data-bs-toggle="tooltip" title="Liste d’attente">
-                        <form action="{{ route('univ.applications.waitlist', $app->id) }}"
-                              method="POST"
-                              class="d-inline-block form-action"
-                              data-action="waitlist">
+                        <form action="{{ route('univ.applications.waitlist',$app->id) }}" method="POST" class="d-inline-block form-action" data-action="waitlist">
                           @csrf
-                          <button type="submit" class="btn p-0 m-0 text-warning">
+                          <button type="submit" class="btn p-0 m-0 text-warning" @if($app->status===3) disabled @endif>
                             <i class="ri-list-check fs-16"></i>
                           </button>
                         </form>
                       </li>
                       {{-- Rejeter --}}
                       <li class="list-inline-item" data-bs-toggle="tooltip" title="Rejeter">
-                        <form action="{{ route('univ.applications.reject', $app->id) }}"
-                              method="POST"
-                              class="d-inline-block form-action"
-                              data-action="reject">
+                        <form action="{{ route('univ.applications.reject',$app->id) }}" method="POST" class="d-inline-block form-action" data-action="reject">
                           @csrf
-                          <button type="submit" class="btn p-0 m-0 text-danger">
+                          <button type="submit" class="btn p-0 m-0 text-danger" @if($app->status===2) disabled @endif>
                             <i class="ri-close-circle-line fs-16"></i>
+                          </button>
+                        </form>
+                      </li>
+                      {{-- Restaurer --}}
+                      <li class="list-inline-item" data-bs-toggle="tooltip" title="Restaurer en attente">
+                        <form action="{{ route('univ.applications.restore',$app->id) }}" method="POST" class="d-inline-block form-action" data-action="restore">
+                          @csrf
+                          <button type="submit" class="btn p-0 m-0 text-secondary" @if($app->status===0&&!$app->univ_confirmed) disabled @endif>
+                            <i class="ri-restart-fill fs-16"></i>
                           </button>
                         </form>
                       </li>
                       {{-- Supprimer --}}
                       <li class="list-inline-item" data-bs-toggle="tooltip" title="Supprimer">
-                        <form action="{{ route('univ.applications.destroy', $app->id) }}"
-                              method="POST"
-                              class="d-inline-block form-action"
-                              data-action="delete">
-                          @csrf
-                          @method('DELETE')
-                          <button type="submit" class="btn p-0 m-0 text-danger">
-                            <i class="ri-delete-bin-5-fill fs-16"></i>
-                          </button>
+                        <form action="{{ route('univ.applications.destroy',$app->id) }}" method="POST" class="d-inline-block form-action" data-action="delete">
+                          @csrf @method('DELETE')
+                          <button type="submit" class="btn p-0 m-0 text-danger"><i class="ri-delete-bin-5-fill fs-16"></i></button>
                         </form>
                       </li>
                     </ul>
                   </td>
                 </tr>
               @empty
-                <tr>
-                  <td colspan="10" class="text-center">Aucune candidature trouvée.</td>
-                </tr>
+                <tr><td colspan="11" class="text-center">Aucune candidature disponible.</td></tr>
               @endforelse
             </tbody>
           </table>
+
           <div class="noresult text-center p-4" style="display:none;">
             <p class="text-muted mb-0">Désolé ! Aucun résultat trouvé.</p>
           </div>
@@ -202,7 +171,7 @@
   </div>
 </div>
 
-{{-- Modale scrollable de détails --}}
+{{-- Modale Show --}}
 <div class="modal fade" id="showModal" tabindex="-1" aria-labelledby="showModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable modal-lg">
     <div class="modal-content">
@@ -212,22 +181,22 @@
       </div>
       <div class="modal-body">
         <dl class="row">
-          <dt class="col-sm-3">Créée le</dt><dd class="col-sm-9" id="modalCreated"></dd>
-          <dt class="col-sm-3">Candidat</dt><dd class="col-sm-9" id="modalUser"></dd>
-          <dt class="col-sm-3">Email</dt><dd class="col-sm-9" id="modalEmail"></dd>
-          <dt class="col-sm-3">CIN</dt><dd class="col-sm-9" id="modalCin"></dd>
-          <dt class="col-sm-3">Établissement</dt><dd class="col-sm-9" id="modalEtab"></dd>
-          <dt class="col-sm-3">Grade</dt><dd class="col-sm-9" id="modalGrade"></dd>
-          <dt class="col-sm-3">Formation</dt><dd class="col-sm-9" id="modalFormation"></dd>
-          <dt class="col-sm-3">Deadline</dt><dd class="col-sm-9" id="modalDeadline"></dd>
-          <dt class="col-sm-3">Description</dt><dd class="col-sm-9" id="modalDesc"></dd>
-          <dt class="col-sm-3">Durée</dt><dd class="col-sm-9" id="modalDuree"></dd>
-          <dt class="col-sm-3">Lieu</dt><dd class="col-sm-9" id="modalLieu"></dd>
-          <dt class="col-sm-3">Capacité</dt><dd class="col-sm-9" id="modalCapacite"></dd>
-          <dt class="col-sm-3">Sessions</dt><dd class="col-sm-9" id="modalSessions"></dd>
-          <dt class="col-sm-3">Mode</dt><dd class="col-sm-9" id="modalMode"></dd>
-          <dt class="col-sm-3">Demandes</dt><dd class="col-sm-9" id="modalNbreDem"></dd>
-          <dt class="col-sm-3">Inscrits</dt><dd class="col-sm-9" id="modalNbreIns"></dd>
+          <dt class="col-sm-3">Créée le</dt><dd class="col-sm-9" id="modalCreated">—</dd>
+          <dt class="col-sm-3">Candidat</dt><dd class="col-sm-9" id="modalUser">—</dd>
+          <dt class="col-sm-3">Email</dt><dd class="col-sm-9" id="modalEmail">—</dd>
+          <dt class="col-sm-3">CIN</dt><dd class="col-sm-9" id="modalCin">—</dd>
+          <dt class="col-sm-3">Établissement</dt><dd class="col-sm-9" id="modalEtab">—</dd>
+          <dt class="col-sm-3">Grade</dt><dd class="col-sm-9" id="modalGrade">—</dd>
+          <dt class="col-sm-3">Formation</dt><dd class="col-sm-9" id="modalFormation">—</dd>
+          <dt class="col-sm-3">Deadline</dt><dd class="col-sm-9" id="modalDeadline">—</dd>
+          <dt class="col-sm-3">Description</dt><dd class="col-sm-9" id="modalDesc">—</dd>
+          <dt class="col-sm-3">Durée</dt><dd class="col-sm-9" id="modalDuree">—</dd>
+          <dt class="col-sm-3">Lieu</dt><dd class="col-sm-9" id="modalLieu">—</dd>
+          <dt class="col-sm-3">Capacité</dt><dd class="col-sm-9" id="modalCapacite">—</dd>
+          <dt class="col-sm-3">Sessions</dt><dd class="col-sm-9" id="modalSessions">—</dd>
+          <dt class="col-sm-3">Mode</dt><dd class="col-sm-9" id="modalMode">—</dd>
+          <dt class="col-sm-3">Demandes</dt><dd class="col-sm-9" id="modalNbreDem">—</dd>
+          <dt class="col-sm-3">Inscrits</dt><dd class="col-sm-9" id="modalNbreIns">—</dd>
         </dl>
       </div>
       <div class="modal-footer">
@@ -244,80 +213,42 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  const rows        = Array.from(document.querySelectorAll('#jobListTable tbody tr'));
-  const searchInput = document.getElementById('searchInput');
-  const tabs        = document.querySelectorAll('.nav-tabs-custom .nav-link[data-status]');
-  let activeStatus  = 'all';
+  // Init List.js
+  const listObj = new List('applicationList', {
+    valueNames: ['id','formation','cin','applicant','date','status','cap','dem','ins'],
+    page: 10,
+    pagination: true,
+    searchClass: 'search'
+  });
 
-  function filterData() {
-    const q = searchInput.value.trim().toLowerCase();
-    let anyVisible = false;
+  // afficher message "aucun résultat"
+  const noResult = document.querySelector('.noresult');
+  listObj.on('updated', function(list) {
+    noResult.style.display = list.matchingItems.length === 0 ? 'block' : 'none';
+  });
 
-    rows.forEach(r => {
-      const stat    = r.dataset.status;
-      const univOk  = r.dataset.univConfirmed === '1';
-      let show      = false;
-
-      if (activeStatus === 'all') {
-        show = true;
-      } else if (activeStatus === '0') {
-        show = stat==='0' && !univOk;
-      } else if (activeStatus === '1') {
-        show = univOk;
-      } else {
-        show = stat === activeStatus;
-      }
-
-      if (q && !r.textContent.toLowerCase().includes(q)) show = false;
-      r.style.display = show ? '' : 'none';
-      if (show) anyVisible = true;
-    });
-
-    document.querySelector('.noresult').style.display = anyVisible ? 'none' : '';
-  }
-
-  tabs.forEach(tab => {
-    tab.addEventListener('click', function(e) {
+  // filtres par onglet
+  const tabs = document.querySelectorAll('.nav-tabs-custom .nav-link[data-status]');
+  let activeStatus = 'all';
+  tabs.forEach(tab=>{
+    tab.addEventListener('click', e=>{
       e.preventDefault();
-      tabs.forEach(t => t.classList.remove('active'));
-      this.classList.add('active');
-      activeStatus = this.dataset.status;
-      filterData();
+      tabs.forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');
+      activeStatus = tab.dataset.status;
+      listObj.filter(item=>{
+        if(activeStatus==='all') return true;
+        const stat = item.elm.getAttribute('data-status'),
+              ok   = item.elm.getAttribute('data-univ-confirmed')==='1';
+        if(activeStatus==='0') return stat==='0' && !ok;
+        if(activeStatus==='1') return ok;
+        return stat===activeStatus;
+      });
+      listObj.update();
     });
   });
 
-  searchInput.addEventListener('input', filterData);
-  filterData();
-
-  document.querySelectorAll('.form-action').forEach(form => {
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      let title = '';
-      switch(form.dataset.action) {
-        case 'accept':   title = 'Accepter cette candidature ?'; break;
-        case 'waitlist': title = 'Mettre en liste d’attente ?'; break;
-        case 'reject':   title = 'Rejeter cette candidature ?'; break;
-        case 'delete':   title = 'Supprimer cette candidature ?'; break;
-      }
-      Swal.fire({
-        title, icon:'warning',
-        showCancelButton:true,
-        confirmButtonText:'Oui',
-        cancelButtonText:'Annuler'
-      }).then(res => res.isConfirmed && form.submit());
-    });
-  });
-
-  @if(session('success'))
-    Swal.fire({ icon:'success', title:'{{ session('success') }}', timer:2000, showConfirmButton:false });
-  @endif
-  @if(session('error'))
-    Swal.fire({ icon:'error',   title:'{{ session('error') }}',   timer:2000, showConfirmButton:false });
-  @endif
-  @if(session('info'))
-    Swal.fire({ icon:'info',    title:'{{ session('info') }}',    timer:2000, showConfirmButton:false });
-  @endif
-
+  // remplir la modale Show
   const showModalEl = document.getElementById('showModal');
   showModalEl.addEventListener('show.bs.modal', event => {
     const btn = event.relatedTarget;
@@ -330,10 +261,42 @@ document.addEventListener('DOMContentLoaded', function() {
       modalMode:'mode', modalNbreDem:'nbre-dem', modalNbreIns:'nbre-ins'
     };
     Object.entries(map).forEach(([dd,attr]) => {
-      showModalEl.querySelector('#'+dd).textContent =
-        btn.getAttribute('data-'+attr) || '—';
+      const val = btn.getAttribute('data-'+attr) || '—';
+      showModalEl.querySelector('#'+dd).textContent = val;
     });
   });
+
+  // confirmations SweetAlert
+  document.querySelectorAll('.form-action').forEach(form=>{
+    form.addEventListener('submit', e=>{
+      e.preventDefault();
+      let title='';
+      switch(form.dataset.action){
+        case 'accept':   title='Accepter cette candidature ?';break;
+        case 'waitlist': title='Mettre en liste d’attente ?';break;
+        case 'reject':   title='Rejeter cette candidature ?';break;
+        case 'restore':  title='Restaurer en attente ?';break;
+        case 'delete':   title='Supprimer cette candidature ?';break;
+      }
+      Swal.fire({
+        title, icon:'warning',
+        showCancelButton:true,
+        confirmButtonText:'Oui',
+        cancelButtonText:'Annuler'
+      }).then(res=>res.isConfirmed && form.submit());
+    });
+  });
+
+  // notifications flash
+  @if(session('success'))
+    Swal.fire({icon:'success',title:'{{ session('success') }}',timer:2000,showConfirmButton:false});
+  @endif
+  @if(session('error'))
+    Swal.fire({icon:'error',title:'{{ session('error') }}',timer:2000,showConfirmButton:false});
+  @endif
+  @if(session('info'))
+    Swal.fire({icon:'info',title:'{{ session('info') }}',timer:2000,showConfirmButton:false});
+  @endif
 });
 </script>
 @endpush

@@ -11,7 +11,7 @@
           <h5 class="card-title mb-3 mb-md-0 flex-grow-1">Candidatures</h5>
           <div class="flex-shrink-0">
             <div class="search-box">
-              <input type="text" id="searchInput" class="form-control" placeholder="Rechercher des candidatures…">
+              <input type="text" class="form-control search" placeholder="Rechercher des candidatures…">
               <i class="ri-search-line search-icon"></i>
             </div>
           </div>
@@ -21,28 +21,22 @@
       {{-- onglets de statut --}}
       <div class="card-body pt-0">
         <ul class="nav nav-tabs nav-tabs-custom nav-success mb-3" role="tablist">
-          {{-- Toutes --}}
-          <li class="nav-item">
-            <a class="nav-link active" data-status="all" href="#">Toutes</a>
-          </li>
-          {{-- Par statut (0 = En attente, 1 = Acceptée, 2 = Rejetée) --}}
+          <li class="nav-item"><a class="nav-link active" data-status="all" href="#">Toutes</a></li>
           @foreach($statusLabels as $code => $label)
             @if($code !== 3)
               @php
                 if ($code === 0) {
-                  $count = $applications->where('status', 0)
-                                        ->where('etab_confirmed', false)
-                                        ->count();
+                  $count = $applications->where('status',0)->where('etab_confirmed',false)->count();
                 } elseif ($code === 1) {
-                  $count = $applications->where('etab_confirmed', true)->count();
-                } else { // 2
-                  $count = $applications->where('status', 2)->count();
+                  $count = $applications->where('etab_confirmed',true)->count();
+                } else {
+                  $count = $applications->where('status',2)->count();
                 }
               @endphp
               <li class="nav-item">
                 <a class="nav-link" data-status="{{ $code }}" href="#">
                   {{ $label }}
-                  @if($count > 0)
+                  @if($count>0)
                     <span class="badge bg-danger align-middle ms-1">{{ $count }}</span>
                   @endif
                 </a>
@@ -56,13 +50,10 @@
           <table class="table table-nowrap align-middle" id="jobListTable">
             <thead class="text-muted table-light">
               <tr class="text-uppercase">
-                <th style="width:25px;">
-                  <div class="form-check">
-                    <input class="form-check-input" type="checkbox" id="checkAll">
-                  </div>
-                </th>
+                <th><div class="form-check"><input class="form-check-input" type="checkbox" id="checkAll"></div></th>
                 <th class="sort" data-sort="id" style="width:140px;">ID candidature</th>
                 <th class="sort" data-sort="formation">Formation</th>
+                <th class="sort" data-sort="cin" style="width:120px;">CIN</th>
                 <th class="sort" data-sort="applicant">Candidat</th>
                 <th class="sort" data-sort="date">Date de dépôt</th>
                 <th class="sort" data-sort="status">Statut</th>
@@ -72,26 +63,19 @@
                 <th class="text-end">Actions</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody class="list">
               @forelse($applications as $app)
-                <tr
-                  data-status="{{ $app->status }}"
-                  data-etab-confirmed="{{ $app->etab_confirmed ? '1' : '0' }}"
-                >
-                  <th scope="row">
-                    <div class="form-check">
-                      <input class="form-check-input" type="checkbox" name="selected[]" value="{{ $app->id }}">
-                    </div>
-                  </th>
+                <tr data-status="{{ $app->status }}" data-etab-confirmed="{{ $app->etab_confirmed?'1':'0' }}">
+                  <th scope="row"><div class="form-check"><input class="form-check-input" type="checkbox" name="selected[]" value="{{ $app->id }}"></div></th>
                   <td class="id">#{{ $app->id }}</td>
                   <td class="formation">{{ $app->formation->titre }}</td>
+                  <td class="cin">{{ $app->user->cin }}</td>
                   <td class="applicant">{{ $app->user->prenom }} {{ $app->user->nom }}</td>
                   <td class="date">{{ $app->created_at->format('d M, Y') }}</td>
                   <td class="status">
                     <span class="badge
-                      {{ $app->status === 0 ? 'bg-warning-subtle text-warning' :
-                         ($app->status === 1 ? 'bg-success-subtle text-success' :
-                         'bg-danger-subtle text-danger') }}">
+                      {{ $app->status===0?'bg-warning-subtle text-warning':
+                         ($app->status===1?'bg-success-subtle text-success':'bg-danger-subtle text-danger') }}">
                       {{ $statusLabels[$app->status] }}
                     </span>
                   </td>
@@ -102,10 +86,7 @@
                     <ul class="list-inline hstack gap-2 mb-0">
                       {{-- Voir --}}
                       <li class="list-inline-item" data-bs-toggle="tooltip" title="Voir">
-                        <a href="#"
-                           class="text-primary btn-show"
-                           data-bs-toggle="modal"
-                           data-bs-target="#showModal"
+                        <a href="#" class="text-primary btn-show" data-bs-toggle="modal" data-bs-target="#showModal"
                            data-created="{{ $app->created_at->format('d M, Y H:i') }}"
                            data-user="{{ $app->user->prenom }} {{ $app->user->nom }}"
                            data-email="{{ $app->user->email }}"
@@ -127,53 +108,51 @@
                       </li>
                       {{-- Accepter --}}
                       <li class="list-inline-item" data-bs-toggle="tooltip" title="Accepter">
-                        <form action="{{ route('etab.applications.accept', $app->id) }}"
-                              method="POST"
-                              class="d-inline-block form-action"
-                              data-action="accept">
+                        <form action="{{ route('etab.applications.accept',$app->id) }}" method="POST" class="d-inline-block form-action" data-action="accept">
                           @csrf
-                          <button type="submit"
-                                  class="btn p-0 m-0 text-success"
-                                  {{ $app->etab_confirmed ? 'disabled' : '' }}>
+                          <button type="submit" class="btn p-0 m-0 text-success" @if($app->etab_confirmed) disabled @endif>
                             <i class="ri-checkbox-multiple-fill fs-16"></i>
                           </button>
                         </form>
                       </li>
                       {{-- Rejeter --}}
                       <li class="list-inline-item" data-bs-toggle="tooltip" title="Rejeter">
-                        <form action="{{ route('etab.applications.reject', $app->id) }}"
+                        <form action="{{ route('etab.applications.reject',$app->id) }}" method="POST" class="d-inline-block form-action" data-action="reject">
+                          @csrf
+                          <button type="submit" class="btn p-0 m-0 text-danger" @if($app->status===2) disabled @endif>
+                            <i class="ri-close-circle-line fs-16"></i>
+                          </button>
+                        </form>
+                      </li>
+                      {{-- Restaurer --}}
+                      <li class="list-inline-item" data-bs-toggle="tooltip" title="Restaurer en attente">
+                        <form action="{{ route('etab.applications.restore', $app->id) }}"
                               method="POST"
                               class="d-inline-block form-action"
-                              data-action="reject">
+                              data-action="restore">
                           @csrf
-                          <button type="submit" class="btn p-0 m-0 text-danger">
-                            <i class="ri-close-circle-line fs-16"></i>
+                          <button type="submit" class="btn p-0 m-0 text-secondary"
+                                  @if($app->status === 0 && !$app->etab_confirmed) disabled @endif>
+                            <i class="ri-restart-fill fs-16"></i>
                           </button>
                         </form>
                       </li>
                       {{-- Supprimer --}}
                       <li class="list-inline-item" data-bs-toggle="tooltip" title="Supprimer">
-                        <form action="{{ route('etab.applications.destroy', $app->id) }}"
-                              method="POST"
-                              class="d-inline-block form-action"
-                              data-action="delete">
-                          @csrf
-                          @method('DELETE')
-                          <button type="submit" class="btn p-0 m-0 text-danger">
-                            <i class="ri-delete-bin-5-fill fs-16"></i>
-                          </button>
+                        <form action="{{ route('etab.applications.destroy',$app->id) }}" method="POST" class="d-inline-block form-action" data-action="delete">
+                          @csrf @method('DELETE')
+                          <button type="submit" class="btn p-0 m-0 text-danger"><i class="ri-delete-bin-5-fill fs-16"></i></button>
                         </form>
                       </li>
                     </ul>
                   </td>
                 </tr>
               @empty
-                <tr>
-                  <td colspan="10" class="text-center">Aucune candidature trouvée.</td>
-                </tr>
+                <tr><td colspan="11" class="text-center">Aucune candidature disponible.</td></tr>
               @endforelse
             </tbody>
           </table>
+
           <div class="noresult text-center p-4" style="display:none;">
             <p class="text-muted mb-0">Désolé ! Aucun résultat trouvé.</p>
           </div>
@@ -192,7 +171,7 @@
   </div>
 </div>
 
-{{-- Modale scrollable de détails --}}
+{{-- Modale Show --}}
 <div class="modal fade" id="showModal" tabindex="-1" aria-labelledby="showModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-scrollable modal-lg">
     <div class="modal-content">
@@ -202,22 +181,22 @@
       </div>
       <div class="modal-body">
         <dl class="row">
-          <dt class="col-sm-3">Créée le</dt><dd class="col-sm-9" id="modalCreated"></dd>
-          <dt class="col-sm-3">Candidat</dt><dd class="col-sm-9" id="modalUser"></dd>
-          <dt class="col-sm-3">Email</dt><dd class="col-sm-9" id="modalEmail"></dd>
-          <dt class="col-sm-3">CIN</dt><dd class="col-sm-9" id="modalCin"></dd>
-          <dt class="col-sm-3">Établissement</dt><dd class="col-sm-9" id="modalEtab"></dd>
-          <dt class="col-sm-3">Grade</dt><dd class="col-sm-9" id="modalGrade"></dd>
-          <dt class="col-sm-3">Formation</dt><dd class="col-sm-9" id="modalFormation"></dd>
-          <dt class="col-sm-3">Deadline</dt><dd class="col-sm-9" id="modalDeadline"></dd>
-          <dt class="col-sm-3">Description</dt><dd class="col-sm-9" id="modalDesc"></dd>
-          <dt class="col-sm-3">Durée</dt><dd class="col-sm-9" id="modalDuree"></dd>
-          <dt class="col-sm-3">Lieu</dt><dd class="col-sm-9" id="modalLieu"></dd>
-          <dt class="col-sm-3">Capacité</dt><dd class="col-sm-9" id="modalCapacite"></dd>
-          <dt class="col-sm-3">Sessions</dt><dd class="col-sm-9" id="modalSessions"></dd>
-          <dt class="col-sm-3">Mode</dt><dd class="col-sm-9" id="modalMode"></dd>
-          <dt class="col-sm-3">Demandes</dt><dd class="col-sm-9" id="modalNbreDem"></dd>
-          <dt class="col-sm-3">Inscrits</dt><dd class="col-sm-9" id="modalNbreIns"></dd>
+          <dt class="col-sm-3">Créée le</dt><dd class="col-sm-9" id="modalCreated">—</dd>
+          <dt class="col-sm-3">Candidat</dt><dd class="col-sm-9" id="modalUser">—</dd>
+          <dt class="col-sm-3">Email</dt><dd class="col-sm-9" id="modalEmail">—</dd>
+          <dt class="col-sm-3">CIN</dt><dd class="col-sm-9" id="modalCin">—</dd>
+          <dt class="col-sm-3">Établissement</dt><dd class="col-sm-9" id="modalEtab">—</dd>
+          <dt class="col-sm-3">Grade</dt><dd class="col-sm-9" id="modalGrade">—</dd>
+          <dt class="col-sm-3">Formation</dt><dd class="col-sm-9" id="modalFormation">—</dd>
+          <dt class="col-sm-3">Deadline</dt><dd class="col-sm-9" id="modalDeadline">—</dd>
+          <dt class="col-sm-3">Description</dt><dd class="col-sm-9" id="modalDesc">—</dd>
+          <dt class="col-sm-3">Durée</dt><dd class="col-sm-9" id="modalDuree">—</dd>
+          <dt class="col-sm-3">Lieu</dt><dd class="col-sm-9" id="modalLieu">—</dd>
+          <dt class="col-sm-3">Capacité</dt><dd class="col-sm-9" id="modalCapacite">—</dd>
+          <dt class="col-sm-3">Sessions</dt><dd class="col-sm-9" id="modalSessions">—</dd>
+          <dt class="col-sm-3">Mode</dt><dd class="col-sm-9" id="modalMode">—</dd>
+          <dt class="col-sm-3">Demandes</dt><dd class="col-sm-9" id="modalNbreDem">—</dd>
+          <dt class="col-sm-3">Inscrits</dt><dd class="col-sm-9" id="modalNbreIns">—</dd>
         </dl>
       </div>
       <div class="modal-footer">
@@ -234,64 +213,70 @@
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
-  const rows = Array.from(document.querySelectorAll('#jobListTable tbody tr'));
-  const searchInput = document.getElementById('searchInput');
+  // init List.js
+  const listObj = new List('applicationList', {
+    valueNames: ['id','formation','cin','applicant','date','status','capacity','dem','ins'],
+    page: 10,
+    pagination: true,
+    searchClass: 'search'
+  });
+  const noResult = document.querySelector('.noresult');
+  listObj.on('updated', l=> noResult.style.display = l.matchingItems.length===0?'block':'none');
+
+  // filtres onglets
   const tabs = document.querySelectorAll('.nav-tabs-custom .nav-link[data-status]');
-  let activeStatus = 'all';
+  let activeStatus='all';
+  tabs.forEach(tab=>{
+    tab.addEventListener('click',e=>{
+      e.preventDefault();
+      tabs.forEach(t=>t.classList.remove('active'));
+      tab.classList.add('active');
+      activeStatus=tab.dataset.status;
+      listObj.filter(item=>{
+        if(activeStatus==='all') return true;
+        const st=item.elm.getAttribute('data-status'),
+              ok=item.elm.getAttribute('data-etab-confirmed')==='1';
+        if(activeStatus==='0') return st==='0'&&!ok;
+        if(activeStatus==='1') return ok;
+        return st===activeStatus;
+      });
+      listObj.update();
+    });
+  });
 
-  function filterData() {
-    const q = searchInput.value.trim().toLowerCase();
-    let anyVisible = false;
-    rows.forEach(r => {
-      const stat = r.dataset.status;
-      const etabOk = r.dataset.etabConfirmed === '1';
-      let show = false;
-      if (activeStatus === 'all') {
-        show = true;
-      } else if (activeStatus === '0') {
-        show = stat==='0' && !etabOk;
-      } else if (activeStatus === '1') {
-        show = etabOk;
-      } else {
-        show = stat === activeStatus;
+  // modale show
+  const showModalEl=document.getElementById('showModal');
+  showModalEl.addEventListener('show.bs.modal', ev=>{
+    const btn=ev.relatedTarget, map={
+      modalCreated:'created',modalUser:'user',modalEmail:'email',
+      modalCin:'cin',modalEtab:'etab',modalGrade:'grade',
+      modalFormation:'formation',modalDeadline:'deadline',
+      modalDesc:'desc',modalDuree:'duree',modalLieu:'lieu',
+      modalCapacite:'capacite',modalSessions:'sessions',
+      modalMode:'mode',modalNbreDem:'nbre-dem',modalNbreIns:'nbre-ins'
+    };
+    Object.entries(map).forEach(([dd,attr])=>{
+      showModalEl.querySelector('#'+dd).textContent=btn.getAttribute('data-'+attr)||'—';
+    });
+  });
+
+  // confirmations
+  document.querySelectorAll('.form-action').forEach(form=>{
+    form.addEventListener('submit',e=>{
+      e.preventDefault();
+      let title='';
+      switch(form.dataset.action){
+        case 'accept': title='Accepter cette candidature ?';break;
+        case 'reject': title='Rejeter cette candidature ?';break;
+        case 'restore':title='Restaurer en attente ?';break;
+        case 'delete': title='Supprimer cette candidature ?';break;
       }
-      const txt = r.textContent.toLowerCase();
-      if (q && !txt.includes(q)) show = false;
-      r.style.display = show ? '' : 'none';
-      if (show) anyVisible = true;
-    });
-    document.querySelector('.noresult').style.display = anyVisible ? 'none' : '';
-  }
-
-  tabs.forEach(tab => {
-    tab.addEventListener('click', function(e) {
-      e.preventDefault();
-      tabs.forEach(t => t.classList.remove('active'));
-      this.classList.add('active');
-      activeStatus = this.dataset.status;
-      filterData();
+      Swal.fire({title,icon:'warning',showCancelButton:true,confirmButtonText:'Oui',cancelButtonText:'Annuler'})
+        .then(r=>r.isConfirmed&&form.submit());
     });
   });
 
-  searchInput.addEventListener('input', filterData);
-  filterData();
-
-  document.querySelectorAll('.form-action').forEach(form => {
-    form.addEventListener('submit', e => {
-      e.preventDefault();
-      const action = form.dataset.action;
-      let title = '';
-      if (action==='accept') title='Accepter cette candidature ?';
-      if (action==='reject') title='Rejeter cette candidature ?';
-      if (action==='delete') title='Supprimer cette candidature ?';
-      Swal.fire({
-        title, icon:'warning',
-        showCancelButton:true,
-        confirmButtonText:'Oui', cancelButtonText:'Annuler'
-      }).then(res => res.isConfirmed && form.submit());
-    });
-  });
-
+  // flash
   @if(session('success'))
     Swal.fire({icon:'success',title:'{{ session('success') }}',timer:2000,showConfirmButton:false});
   @endif
@@ -299,22 +284,6 @@ document.addEventListener('DOMContentLoaded', function() {
     Swal.fire({icon:'error',title:'{{ session('error') }}',timer:2000,showConfirmButton:false});
   @endif
 
-  const showModalEl = document.getElementById('showModal');
-  showModalEl.addEventListener('show.bs.modal', event => {
-    const btn = event.relatedTarget;
-    const map = {
-      modalCreated:'created', modalUser:'user', modalEmail:'email',
-      modalCin:'cin', modalEtab:'etab', modalGrade:'grade',
-      modalFormation:'formation', modalDeadline:'deadline',
-      modalDesc:'desc', modalDuree:'duree', modalLieu:'lieu',
-      modalCapacite:'capacite', modalSessions:'sessions',
-      modalMode:'mode', modalNbreDem:'nbre-dem', modalNbreIns:'nbre-ins'
-    };
-    Object.entries(map).forEach(([dd,attr]) => {
-      showModalEl.querySelector('#'+dd).textContent =
-        btn.getAttribute('data-'+attr) || '—';
-    });
-  });
 });
 </script>
 @endpush

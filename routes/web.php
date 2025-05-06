@@ -93,38 +93,39 @@ Route::middleware(['auth','role:etab'])->group(function () {
 // routes/web.php
 
 Route::middleware(['auth','role:etab'])
-     ->prefix('etab')                // ← URL will be /etab/applications
-     ->name('etab.')                 // ← all route names start with etab.
+     ->prefix('etab')
+     ->name('etab.')
      ->group(function () {
          Route::get('applications', [ApplicationController::class, 'index'])
               ->name('applications.index');
- 
-         Route::post('applications/{application}/accept', [ApplicationController::class, 'accept'])
+
+         Route::post('applications/{application}/accept',  [ApplicationController::class, 'accept'])
               ->name('applications.accept');
- 
-         Route::post('applications/{application}/reject', [ApplicationController::class, 'reject'])
+
+         Route::post('applications/{application}/reject',  [ApplicationController::class, 'reject'])
               ->name('applications.reject');
-              
-          Route::delete('applications/{application}', [ApplicationController::class, 'destroy'])
+
+         // ← la route restore
+         Route::post('applications/{application}/restore', [ApplicationController::class, 'restore'])
+              ->name('applications.restore');
+
+         Route::delete('applications/{application}',      [ApplicationController::class, 'destroy'])
               ->name('applications.destroy');
      });
 
 
 
-Route::middleware(['auth','role:univ'])
-     ->prefix('univ')->name('univ.')
-     ->group(function(){
-         Route::get('applications', [UniversityApplicationController::class,'index'])
-              ->name('applications.index');
-         Route::post('applications/{application}/accept',  [UniversityApplicationController::class,'accept'])
-              ->name('applications.accept');
-         Route::post('applications/{application}/waitlist',[UniversityApplicationController::class,'waitlist'])
-              ->name('applications.waitlist');
-         Route::post('applications/{application}/reject',  [UniversityApplicationController::class,'reject'])
-              ->name('applications.reject');
-         Route::delete('applications/{application}',     [UniversityApplicationController::class,'destroy'])
-              ->name('applications.destroy');
-     });
+
+
+Route::prefix('univ')->middleware(['auth','role:univ'])->name('univ.')->group(function(){
+          Route::get('applications',                   [UniversityApplicationController::class,'index'])->name('applications.index');
+          Route::post('applications/{application}/accept',   [UniversityApplicationController::class,'accept'])->name('applications.accept');
+          Route::post('applications/{application}/waitlist',[UniversityApplicationController::class,'waitlist'])->name('applications.waitlist');
+          Route::post('applications/{application}/reject',   [UniversityApplicationController::class,'reject'])->name('applications.reject');
+          Route::post('applications/{application}/restore',  [UniversityApplicationController::class,'restore'])->name('applications.restore');
+          Route::delete('applications/{application}',       [UniversityApplicationController::class,'destroy'])->name('applications.destroy');
+      });
+      
  
 
 

@@ -125,4 +125,23 @@ class UniversityApplicationController extends Controller
 
         return back()->with('success','Candidature supprimée.');
     }
+
+    public function restore(ApplicationRequest $application)
+    {
+        $this->authorize('manage', $application);
+
+        // Si elle était acceptée, décrémente avant de réinitialiser
+        $wasAccepted = $application->univ_confirmed && $application->status === 1;
+        if ($wasAccepted) {
+            $application->formation()->decrement('nbre_inscrit');
+        }
+
+        $application->update([
+            'univ_confirmed' => false,
+            'status'         => 0,
+            'hash'           => null,
+        ]);
+
+        return back()->with('info','Candidature restaurée en attente.');
+    }
 }

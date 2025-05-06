@@ -10,7 +10,7 @@ use Illuminate\Http\RedirectResponse;
 
 class ApplicationController extends Controller
 {
-    use AuthorizesRequests;    // ← add this
+    use AuthorizesRequests;
 
     public function index(Request $request)
     {
@@ -66,6 +66,18 @@ class ApplicationController extends Controller
         ]);
 
         return back()->with('error','Demande rejetée.');
+    }
+
+    public function restore(ApplicationRequest $application)
+    {
+        $this->authorize('manage', $application);
+
+        $application->update([
+            'etab_confirmed' => false,
+            'status'         => 0,
+        ]);
+
+        return back()->with('info','Demande restaurée en attente.');
     }
 
     public function destroy(ApplicationRequest $application): RedirectResponse
