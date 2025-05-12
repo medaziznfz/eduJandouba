@@ -9,7 +9,7 @@ class GradeSeeder extends Seeder
 {
     public function run()
     {
-        $grades = ['Technicien', 'Ingénieur', 'Administrateur', 'Étudiant'];
+        $grades = ['Enseignant', 'technicien supérieur', 'technicien', 'Assistant'];
         foreach ($grades as $nom) {
             Grade::create(['nom' => $nom]);
         }

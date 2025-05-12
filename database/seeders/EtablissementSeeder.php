@@ -8,7 +8,7 @@ class EtablissementSeeder extends Seeder
 {
     public function run()
     {
-        $data = ['Université de Jendouba', 'ISAMM', 'ENIT', 'IHEC', 'ISG', 'FST'];
+        $data = ['FSJEGJ', 'INTEK', 'ISSHJ', 'ISLAIB', 'ISIKEF', 'ISEAHK', 'ISAMS', 'ISMTK', 'ISPT', 'ESAK', 'ESIM', 'ISSEPK', 'ISSIK', 'ISBB'];
         foreach ($data as $name) {
             Etablissement::create(['nom' => $name]);
         }
