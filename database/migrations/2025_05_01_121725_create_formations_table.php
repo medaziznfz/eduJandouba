@@ -43,6 +43,9 @@ return new class extends Migration
             $table->unsignedInteger('nbre_demandeur')->default(0);
             $table->unsignedInteger('nbre_inscrit')   ->default(0);
 
+            // New field to track accepted students
+            $table->unsignedInteger('nbre_accepted')->default(0);  // Track accepted applicants
+
             // Timestamps
             $table->timestamps();
         });

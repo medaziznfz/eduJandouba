@@ -142,7 +142,16 @@
                             Deadline : {{ $formation->deadline->format('d M, Y') }}
                         </div>
                     </div>
+
+                    {{-- Add Start at field below Date limite --}}
+                    <div class="d-flex align-items-center mt-2">
+                        <div class="flex-shrink-0 text-muted">
+                            <i class="ri-calendar-fill me-1"></i>
+                            Date de début : {{ $formation->start_at ? \Carbon\Carbon::parse($formation->start_at)->format('d M, Y') : 'Non défini' }}
+                        </div>
+                    </div>
                 </div>
+
 
             </div>
         </div>

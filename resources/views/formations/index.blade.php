@@ -37,6 +37,7 @@
                   <th class="sort" data-sort="sessions">Sessions</th>
                   <th class="sort" data-sort="capacite">Capacité</th>
                   <th class="sort" data-sort="deadline">Date limite</th>
+                  <th class="sort" data-sort="start_at">Date de début</th>
                   <th class="sort" data-sort="status">Statut</th>
                   <th class="sort" data-sort="demandeur">Demandes</th>
                   <th class="sort" data-sort="inscrit">Inscrits</th>
@@ -51,6 +52,7 @@
                   <td class="sessions">{{ $f->sessions }}</td>
                   <td class="capacite">{{ $f->capacite }}</td>
                   <td class="deadline">{{ $f->deadline->format('d/m/Y') }}</td>
+                  <td class="start_at">{{ $f->start_at ? \Carbon\Carbon::parse($f->start_at)->format('d/m/Y') : 'Non défini' }}</td>
                   <td class="status">
                     <span class="badge {{ $f->status_class }}">
                       {{ $f->status_label }}
@@ -121,7 +123,7 @@
     const formationList = new List('formationList', {
       valueNames: [
         'titre', 'duree', 'sessions', 'capacite',
-        'deadline', 'status', 'demandeur', 'inscrit'
+        'deadline', 'start_at', 'status', 'demandeur', 'inscrit'
       ],
       page: 10,
       pagination: true

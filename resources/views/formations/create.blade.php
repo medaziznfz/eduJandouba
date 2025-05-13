@@ -71,14 +71,7 @@
                      value="{{ old('lieu') }}">
               @error('lieu')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
-            {{-- Capacité --}}
-            <div class="col-md-4 mb-3">
-              <label for="capacite" class="form-label">Capacité</label>
-              <input type="number" name="capacite" id="capacite" min="1"
-                     class="form-control @error('capacite') is-invalid @enderror"
-                     value="{{ old('capacite') }}">
-              @error('capacite')<div class="invalid-feedback">{{ $message }}</div>@enderror
-            </div>
+            
           </div>
 
           <div class="row">
@@ -102,6 +95,23 @@
                      value="{{ old('deadline') }}">
               @error('deadline')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
+            {{-- Capacité --}}
+            <div class="col-md-4 mb-3">
+              <label for="capacite" class="form-label">Capacité</label>
+              <input type="number" name="capacite" id="capacite" min="1"
+                     class="form-control @error('capacite') is-invalid @enderror"
+                     value="{{ old('capacite') }}">
+              @error('capacite')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+            {{-- Date de début --}}  
+            <div class="col-md-8 mb-3">
+              <label for="start_at" class="form-label">Date de début</label>
+              <input type="date" name="start_at" id="start_at"
+                    class="form-control @error('start_at') is-invalid @enderror"
+                    value="{{ old('start_at') }}">
+              @error('start_at')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+
           </div>
 
           {{-- Mode --}}
@@ -155,46 +165,51 @@
   <script src="https://cdn.tiny.cloud/1/ecpdzputo2ujf94cdjincgez6pw1q7hh7vdaflsqjsok11v5/tinymce/7/tinymce.min.js" referrerpolicy="origin"></script>
   <script>
     document.addEventListener('DOMContentLoaded', () => {
-      tinymce.init({
-        selector: '#summary',
-        plugins: [
-          'anchor autolink charmap codesample emoticons image link lists media '+
-          'searchreplace table visualblocks wordcount '+
-          'checklist mediaembed casechange formatpainter pageembed a11ychecker '+
-          'tinymcespellchecker permanentpen powerpaste advtable advcode editimage '+
-          'advtemplate ai mentions tinycomments tableofcontents footnotes mergetags '+
-          'autocorrect typography inlinecss markdown importword exportword exportpdf'
-        ],
-        toolbar:
-          'undo redo | blocks fontfamily fontsize | '+
-          'bold italic underline strikethrough | link image media table mergetags | '+
-          'addcomment showcomments | spellcheckdialog a11ycheck typography | '+
-          'align lineheight | checklist numlist bullist indent outdent | '+
-          'emoticons charmap | removeformat',
-        tinycomments_mode:  'embedded',
-        tinycomments_author:'{{ Auth::user()->name ?? "Auteur" }}',
-        mergetags_list: [
-          { value:'First.Name', title:'First Name' },
-          { value:'Email',      title:'Email'      },
-        ],
-        ai_request: (req, respondWith) =>
-          respondWith.string(()=>
-            Promise.reject('See docs to implement AI Assistant')
-          )
-      });
-
-      const modeEl  = document.getElementById('mode'),
-            linkDiv = document.getElementById('link_field');
-      function toggleLink(){
-        if(modeEl.value==='a_distance'){
-          linkDiv.classList.remove('d-none');
-        } else {
-          linkDiv.classList.add('d-none');
-          document.getElementById('link').value = '';
-        }
-      }
-      modeEl.addEventListener('change', toggleLink);
-      toggleLink();
+    tinymce.init({
+      selector: '#summary',
+      plugins: [
+        'anchor autolink charmap codesample emoticons image link lists media ' +
+        'searchreplace table visualblocks wordcount ' +
+        'checklist mediaembed casechange formatpainter pageembed a11ychecker ' +
+        'tinymcespellchecker permanentpen powerpaste advtable advcode editimage ' +
+        'advtemplate ai mentions tinycomments tableofcontents footnotes mergetags ' +
+        'autocorrect typography inlinecss markdown importword exportword exportpdf'
+      ],
+      toolbar:
+        'undo redo | blocks fontfamily fontsize | ' +
+        'bold italic underline strikethrough | link image media table mergetags | ' +
+        'addcomment showcomments | spellcheckdialog a11ycheck typography | ' +
+        'align lineheight | checklist numlist bullist indent outdent | ' +
+        'emoticons charmap | removeformat',
+      tinycomments_mode: 'embedded',
+      tinycomments_author: '{{ Auth::user()->name ?? "Auteur" }}',
+      mergetags_list: [
+        { value: 'First.Name', title: 'First Name' },
+        { value: 'Email', title: 'Email' },
+      ],
+      ai_request: (req, respondWith) =>
+        respondWith.string(() =>
+          Promise.reject('See docs to implement AI Assistant')
+        )
     });
+
+    const modeEl = document.getElementById('mode'),
+          linkDiv = document.getElementById('link_field');  // link field container
+
+    // Initially hide the link field and set its value to null
+    linkDiv.classList.add('d-none');
+    document.getElementById('link').value = '';
+
+    // Listen for changes to the mode
+    modeEl.addEventListener('change', function() {
+      // When the mode is 'a_distance', we just hide the link field
+      linkDiv.classList.add('d-none');
+      document.getElementById('link').value = ''; // Make sure it's empty
+    });
+
+    // Ensure the field is never shown and always empty
+    // No need for any other toggling logic here
+  });
+
   </script>
 @endpush

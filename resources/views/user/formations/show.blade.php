@@ -39,22 +39,30 @@
                         <div>
                             <h4 class="fw-bold mb-1">{{ $formation->titre }}</h4>
                             <div class="hstack gap-3 flex-wrap">
-                                <div><i class="ri-building-line align-bottom me-1"></i>
-                                    {{ optional($formation->etablissement)->nom ?? 'Indépendant' }}
-                                </div>
-                                <div class="vr"></div>
-                                <div>Date création :
-                                    <span class="fw-medium">{{ $formation->created_at->format('d M, Y') }}</span>
-                                </div>
-                                <div class="vr"></div>
-                                <div>Date limite :
-                                    <span class="fw-medium">{{ $formation->deadline->format('d M, Y') }}</span>
-                                </div>
-                                <div class="vr"></div>
-                                <div class="badge rounded-pill {{ $formation->status_class }} fs-12">
-                                    {{ $formation->status_label }}
-                                </div>
+                            <div><i class="ri-building-line align-bottom me-1"></i>
+                                {{ optional($formation->etablissement)->nom ?? 'Indépendant' }}
                             </div>
+                            <div class="vr"></div>
+                            <div>Date création :
+                                <span class="fw-medium">{{ $formation->created_at->format('d M, Y') }}</span>
+                            </div>
+                            <div class="vr"></div>
+                            <div>Date limite :
+                                <span class="fw-medium">{{ $formation->deadline->format('d M, Y') }}</span>
+                            </div>
+                            <div class="vr"></div>
+                            {{-- Add Start at field here --}}
+                            <div>Date de début :
+                                <span class="fw-medium">
+                                    {{ $formation->start_at ? \Carbon\Carbon::parse($formation->start_at)->format('d M, Y') : 'Non défini' }}
+                                </span>
+                            </div>
+                            <div class="vr"></div>
+                            <div class="badge rounded-pill {{ $formation->status_class }} fs-12">
+                                {{ $formation->status_label }}
+                            </div>
+                        </div>
+
                         </div>
                     </div>
 

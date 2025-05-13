@@ -42,10 +42,15 @@
                                 <div class="vr"></div>
                                 <div>Date limite : <span class="fw-medium">{{ $formation->deadline->format('d M, Y') }}</span></div>
                                 <div class="vr"></div>
+                                {{-- Added Start at field with Carbon parsing --}}
+                                <div>Date de début : <span class="fw-medium">{{ $formation->start_at ? \Carbon\Carbon::parse($formation->start_at)->format('d M, Y') : 'Non défini' }}</span></div>
+                                <div class="vr"></div>
                                 <div class="badge rounded-pill bg-{{ $formation->status=='available'?'success':'warning' }} fs-12">
                                     {{ ucfirst(str_replace('_',' ',$formation->status)) }}
                                 </div>
                             </div>
+                        </div>
+
                         </div>
                     </div>
 

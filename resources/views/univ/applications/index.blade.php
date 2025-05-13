@@ -52,14 +52,14 @@
                 <th class="sort" data-sort="date">Date de dépôt</th>
                 <th class="sort" data-sort="status">Statut</th>
                 <th class="sort" data-sort="cap">Capacité</th>
-                <th class="sort" data-sort="dem">Demandes</th>
+                <th class="sort" data-sort="accepted">Acceptés</th>
                 <th class="sort" data-sort="ins">Inscrits</th>
                 <th class="text-end">Actions</th>
               </tr>
             </thead>
             <tbody class="list">
               @forelse($applications as $app)
-                <tr data-status="{{ $app->status }}" data-univ-confirmed="{{ $app->univ_confirmed?'1':'0' }}">
+                <tr data-status="{{ $app->status }}" data-univ-confirmed="{{ $app->univ_confirmed ? '1' : '0' }}">
                   <th scope="row"><div class="form-check"><input class="form-check-input" type="checkbox" name="selected[]" value="{{ $app->id }}"></div></th>
                   <td class="id">#{{ $app->id }}</td>
                   <td class="formation">{{ $app->formation->titre }}</td>
@@ -68,14 +68,14 @@
                   <td class="date">{{ $app->created_at->format('d M, Y') }}</td>
                   <td class="status">
                     <span class="badge
-                      {{ $app->status===0?'bg-warning-subtle text-warning':
-                         ($app->status===1?'bg-success-subtle text-success':
-                         ($app->status===2?'bg-danger-subtle text-danger':'bg-secondary-subtle text-secondary')) }}">
+                      {{ $app->status === 0 ? 'bg-warning-subtle text-warning' :
+                         ($app->status === 1 ? 'bg-success-subtle text-success' :
+                         ($app->status === 2 ? 'bg-danger-subtle text-danger' : 'bg-secondary-subtle text-secondary')) }}">
                       {{ $statusLabels[$app->status] }}
                     </span>
                   </td>
                   <td class="cap">{{ $app->formation->capacite }}</td>
-                  <td class="dem">{{ $app->formation->nbre_demandeur }}</td>
+                  <td class="accepted">{{ $app->formation->nbre_accepted }}</td>
                   <td class="ins">{{ $app->formation->nbre_inscrit }}</td>
                   <td class="text-end">
                     <ul class="list-inline hstack gap-2 mb-0">
@@ -84,7 +84,7 @@
                         <a href="#" class="text-primary btn-show" data-bs-toggle="modal" data-bs-target="#showModal"
                            data-created="{{ $app->created_at->format('d M, Y H:i') }}"
                            data-user="{{ $app->user->prenom }} {{ $app->user->nom }}"
-                           data-email="{{ $app->user->email }}"
+                           data-email="{{ $app->user->email }} "
                            data-cin="{{ $app->user->cin }}"
                            data-etab="{{ optional($app->user->etablissement)->nom }}"
                            data-grade="{{ optional($app->user->grade)->nom }}"
@@ -105,7 +105,7 @@
                       <li class="list-inline-item" data-bs-toggle="tooltip" title="Accepter">
                         <form action="{{ route('univ.applications.accept',$app->id) }}" method="POST" class="d-inline-block form-action" data-action="accept">
                           @csrf
-                          <button type="submit" class="btn p-0 m-0 text-success" @if($app->univ_confirmed&&$app->status===1) disabled @endif>
+                          <button type="submit" class="btn p-0 m-0 text-success" @if($app->univ_confirmed && $app->status === 1) disabled @endif>
                             <i class="ri-checkbox-multiple-fill fs-16"></i>
                           </button>
                         </form>
@@ -114,7 +114,7 @@
                       <li class="list-inline-item" data-bs-toggle="tooltip" title="Liste d’attente">
                         <form action="{{ route('univ.applications.waitlist',$app->id) }}" method="POST" class="d-inline-block form-action" data-action="waitlist">
                           @csrf
-                          <button type="submit" class="btn p-0 m-0 text-warning" @if($app->status===3) disabled @endif>
+                          <button type="submit" class="btn p-0 m-0 text-warning" @if($app->status === 3) disabled @endif>
                             <i class="ri-list-check fs-16"></i>
                           </button>
                         </form>
@@ -123,7 +123,7 @@
                       <li class="list-inline-item" data-bs-toggle="tooltip" title="Rejeter">
                         <form action="{{ route('univ.applications.reject',$app->id) }}" method="POST" class="d-inline-block form-action" data-action="reject">
                           @csrf
-                          <button type="submit" class="btn p-0 m-0 text-danger" @if($app->status===2) disabled @endif>
+                          <button type="submit" class="btn p-0 m-0 text-danger" @if($app->status === 2) disabled @endif>
                             <i class="ri-close-circle-line fs-16"></i>
                           </button>
                         </form>
@@ -132,7 +132,7 @@
                       <li class="list-inline-item" data-bs-toggle="tooltip" title="Restaurer en attente">
                         <form action="{{ route('univ.applications.restore',$app->id) }}" method="POST" class="d-inline-block form-action" data-action="restore">
                           @csrf
-                          <button type="submit" class="btn p-0 m-0 text-secondary" @if($app->status===0&&!$app->univ_confirmed) disabled @endif>
+                          <button type="submit" class="btn p-0 m-0 text-secondary" @if($app->status === 0 && !$app->univ_confirmed) disabled @endif>
                             <i class="ri-restart-fill fs-16"></i>
                           </button>
                         </form>

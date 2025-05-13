@@ -75,14 +75,7 @@
                      value="{{ old('lieu', $formation->lieu) }}">
               @error('lieu')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
-            {{-- Capacité --}}
-            <div class="col-md-4 mb-3">
-              <label for="capacite" class="form-label">Capacité</label>
-              <input type="number" name="capacite" id="capacite" min="1"
-                     class="form-control @error('capacite') is-invalid @enderror"
-                     value="{{ old('capacite', $formation->capacite) }}">
-              @error('capacite')<div class="invalid-feedback">{{ $message }}</div>@enderror
-            </div>
+            
           </div>
 
           <div class="row">
@@ -108,6 +101,22 @@
                      class="form-control @error('deadline') is-invalid @enderror"
                      value="{{ old('deadline', $formation->deadline->format('Y-m-d')) }}">
               @error('deadline')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+            {{-- Capacité --}}
+            <div class="col-md-4 mb-3">
+              <label for="capacite" class="form-label">Capacité</label>
+              <input type="number" name="capacite" id="capacite" min="1"
+                     class="form-control @error('capacite') is-invalid @enderror"
+                     value="{{ old('capacite', $formation->capacite) }}">
+              @error('capacite')<div class="invalid-feedback">{{ $message }}</div>@enderror
+            </div>
+            {{-- Date de début --}}
+            <div class="col-md-8 mb-3">
+              <label for="start_at" class="form-label">Date de début</label>
+              <input type="date" name="start_at" id="start_at"
+                    class="form-control @error('start_at') is-invalid @enderror"
+                    value="{{ old('start_at', $formation->start_at ? \Carbon\Carbon::parse($formation->start_at)->format('Y-m-d') : '') }}">
+              @error('start_at')<div class="invalid-feedback">{{ $message }}</div>@enderror
             </div>
           </div>
 

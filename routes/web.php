@@ -11,11 +11,53 @@ use App\Http\Controllers\UserFormationController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\UniversityApplicationController;
 
+
+
 /*
 |--------------------------------------------------------------------------
 | Web Routes
 |--------------------------------------------------------------------------
 */
+
+
+use Illuminate\Support\Facades\Mail;
+use App\Mail\SimpleTestMail;
+
+Route::get('/test-email', function () {
+    $user = App\Models\User::first();
+    Mail::to($user->email)->send(new SimpleTestMail($user));
+    return 'Email sent successfully!';
+});
+
+
+
+Route::get('/test-env', function () {
+    dd(env('MAIL_MAILER'));  // Dump the value of MAIL_MAILER
+});
+
+Route::get('/test-env-vars', function () {
+    dd(
+        env('APP_NAME'),        // Should print 'local' if the environment is correct
+        env('APP_URL'),      // Should print 'true' if debugging is enabled
+        env('MAIL_MAILER')     // Should print 'log' based on your .env configuration
+    );
+});
+
+
+use App\Mail\TestEmail;
+
+Route::get('/send-test-email', function () {
+    // Send the test email
+    Mail::to('medaziznefzi1@gmail.com')->send(new TestEmail());
+
+    // Return a response
+    return 'Test email sent and logged!';
+});
+
+
+
+
+
 
 Route::get('/', function () {
      // Récupère tous les établissements
@@ -32,6 +74,11 @@ Route::get('/request/statut', [RequestController::class, 'showStatusForm'])
      ->name('request.status.form');
 Route::post('/request/statut', [RequestController::class, 'checkStatus'])
      ->name('request.status.check');
+
+
+Route::get('/application/{application}/confirm/{hash}', [UserController::class, 'confirm'])
+    ->name('user.application.confirm');
+
 
 // 🔹 Complétion de l’inscription (lien envoyé par email)
 Route::get('/complete-registration/{token}', 
