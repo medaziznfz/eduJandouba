@@ -13,12 +13,10 @@ class Formation extends Model
      * The attributes that are mass assignable.
      */
     protected $fillable = [
-        'titre','thumbnail','description','summary',
-        'duree','lieu',
-        'capacite','sessions','deadline',
-        'etablissement_id','status',
-        'nbre_demandeur','nbre_inscrit',
-        'mode','start_at','link',
+        'titre', 'thumbnail', 'description', 'summary',
+        'duree', 'lieu', 'capacite', 'sessions', 'deadline',
+        'etablissement_id', 'status', 'nbre_demandeur', 'nbre_inscrit',
+        'mode', 'start_at', 'link', 'formateur_name', 'formateur_email', // added
     ];
 
     /**
@@ -74,13 +72,16 @@ class Formation extends Model
 
     public function applicants()
     {
-        return $this->belongsToMany(User::class)
-                    ->withPivot('etab_confirmed', 'univ_confirmed')
+        return $this->belongsToMany(User::class, 'formation_user')
+                    ->withPivot('status', 'etab_confirmed', 'univ_confirmed', 'user_confirmed') // Include 'status'
                     ->withTimestamps();
     }
+
 
     public function applicationRequests()
     {
         return $this->hasMany(ApplicationRequest::class);
     }
+
+    
 }

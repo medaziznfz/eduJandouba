@@ -35,7 +35,10 @@ class ApplicationConfirmation extends Mailable
                     ->with([
                         'userName' => $this->application->user->prenom . ' ' . $this->application->user->nom,
                         'formationTitle' => $this->application->formation->titre,
-                        'confirmationUrl' => route('user.application.confirm', ['application' => $this->application, 'hash' => $this->application->hash]),
+                        'confirmationUrl' => route('user.application.index', [
+                            'application' => $this->application->id, 
+                            'hash' => $this->application->hash
+                        ]),
                     ]);
     }
 }

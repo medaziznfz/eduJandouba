@@ -20,12 +20,14 @@ class ApplicationRequest extends Model
         'hash',
         'etab_confirmed',
         'univ_confirmed',
+        'user_confirmed',
     ];
 
     // ↓ if you want dates to be cast
     protected $casts = [
         'etab_confirmed'  => 'boolean',
         'univ_confirmed'  => 'boolean',
+        'user_confirmed'  => 'boolean',
         'created_at'      => 'datetime',
         'updated_at'      => 'datetime',
     ];

@@ -36,9 +36,7 @@ return [
     */
 
     'mailers' => [
-        'log' => [
-        'driver' => 'log',
-        ],
+
         'smtp' => [
             'transport' => 'smtp',
             'scheme' => env('MAIL_SCHEME'),
@@ -72,6 +70,10 @@ return [
             'path' => env('MAIL_SENDMAIL_PATH', '/usr/sbin/sendmail -bs -i'),
         ],
 
+        'log' => [
+            'transport' => 'log',
+            'channel' => env('MAIL_LOG_CHANNEL'),
+        ],
 
         'array' => [
             'transport' => 'array',
@@ -83,7 +85,6 @@ return [
                 'smtp',
                 'log',
             ],
-            'retry_after' => 60,
         ],
 
         'roundrobin' => [
@@ -92,7 +93,6 @@ return [
                 'ses',
                 'postmark',
             ],
-            'retry_after' => 60,
         ],
 
     ],

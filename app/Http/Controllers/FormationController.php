@@ -6,9 +6,12 @@ use App\Models\Formation;
 use App\Models\Grade;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;  // Make sure to import the Log facade
+use Illuminate\Foundation\Auth\Access\AuthorizesRequests; 
 
 class FormationController extends Controller
 {
+     use AuthorizesRequests;
     /**
      * Display a paginated list of formations
      * GET /univ/formations
@@ -141,4 +144,53 @@ public function update(Request $request, Formation $formation)
         $formation->delete();
         return response()->json(['success' => true]);
     }
+
+    public function launch(Formation $formation, Request $request)
+    {
+
+         Log::info('Launch method triggered'); // Log this to ensure the method is being hit.
+
+        // Now let's check if we are getting the request data
+        dd($request->all()); // This will stop the execution and display the form data
+
+
+        // Check if the user has the 'univ' role
+        if (Auth::user()->role !== 'univ') {
+            return abort(403, 'Unauthorized action.');
+        }
+
+        // Log the incoming request data for debugging purposes
+        Log::info('User role: ' . Auth::user()->role);
+
+        // Validate form data for formateur name, email, and meet link
+        $validatedData = $request->validate([
+            'formateur_name' => 'required|string|max:255',
+            'formateur_email' => 'required|email|max:255',
+            'link' => 'nullable|url', // Link for meeting if applicable
+        ]);
+
+        // Log the incoming data for debugging purposes
+        Log::info('Launching formation with data: ', $validatedData);
+
+        // Update the formation with the formateur details and change status to 'in_progress'
+        $formation->formateur_name = $validatedData['formateur_name'];
+        $formation->formateur_email = $validatedData['formateur_email'];
+        $formation->link = $validatedData['link'] ?? $formation->link; // Update the meet link if provided
+        $formation->status = 'in_progress';  // Change status to 'in_progress'
+
+        // Save the changes to the database
+        $formation->save();
+
+        // Return a success message
+        return redirect()->route('univ.formations.show', $formation)
+            ->with('success', 'La formation a été lancée avec succès et est maintenant en cours.');
+    }
+
+
+
+
+
+
+
+
 }

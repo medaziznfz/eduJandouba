@@ -10,6 +10,7 @@ use App\Models\Etablissement;
 use App\Http\Controllers\UserFormationController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\UniversityApplicationController;
+use App\Http\Controllers\UserController;
 
 
 
@@ -18,6 +19,16 @@ use App\Http\Controllers\UniversityApplicationController;
 | Web Routes
 |--------------------------------------------------------------------------
 */
+
+Route::get('/application/{application}/{hash}/confirm', [UserController::class, 'index'])->name('user.application.index');
+Route::post('/application/{application}/{hash}/confirm', [UserController::class, 'confirmAction'])->name('user.application.confirmAction');
+Route::post('/application/{application}/{hash}/decline', [UserController::class, 'declineAction'])->name('user.application.declineAction');
+
+
+// Routes for confirming or rejecting a user's application
+Route::post('/user/formations/{formation}/confirm-or-reject', [UserFormationController::class, 'confirmOrReject'])
+    ->name('user.formations.confirm_or_reject');
+
 
 
 use Illuminate\Support\Facades\Mail;
@@ -76,8 +87,6 @@ Route::post('/request/statut', [RequestController::class, 'checkStatus'])
      ->name('request.status.check');
 
 
-Route::get('/application/{application}/confirm/{hash}', [UserController::class, 'confirm'])
-    ->name('user.application.confirm');
 
 
 // 🔹 Complétion de l’inscription (lien envoyé par email)
@@ -173,8 +182,10 @@ Route::prefix('univ')->middleware(['auth','role:univ'])->name('univ.')->group(fu
           Route::delete('applications/{application}',       [UniversityApplicationController::class,'destroy'])->name('applications.destroy');
       });
       
- 
-
+// Route to handle launching the formation
+Route::middleware(['auth', 'role:univ'])
+    ->post('/univ/formations/{formation}/launch', [FormationController::class, 'launch'])
+    ->name('univ.formations.launch');
 
 Route::middleware(['auth','role:univ'])
      ->prefix('univ')

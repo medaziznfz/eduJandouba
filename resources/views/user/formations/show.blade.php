@@ -39,30 +39,29 @@
                         <div>
                             <h4 class="fw-bold mb-1">{{ $formation->titre }}</h4>
                             <div class="hstack gap-3 flex-wrap">
-                            <div><i class="ri-building-line align-bottom me-1"></i>
-                                {{ optional($formation->etablissement)->nom ?? 'Indépendant' }}
+                                <div><i class="ri-building-line align-bottom me-1"></i>
+                                    {{ optional($formation->etablissement)->nom ?? 'Indépendant' }}
+                                </div>
+                                <div class="vr"></div>
+                                <div>Date création :
+                                    <span class="fw-medium">{{ $formation->created_at->format('d M, Y') }}</span>
+                                </div>
+                                <div class="vr"></div>
+                                <div>Date limite :
+                                    <span class="fw-medium">{{ $formation->deadline->format('d M, Y') }}</span>
+                                </div>
+                                <div class="vr"></div>
+                                {{-- Add Start at field here --}}
+                                <div>Date de début :
+                                    <span class="fw-medium">
+                                        {{ $formation->start_at ? \Carbon\Carbon::parse($formation->start_at)->format('d M, Y') : 'Non défini' }}
+                                    </span>
+                                </div>
+                                <div class="vr"></div>
+                                <div class="badge rounded-pill {{ $formation->status_class }} fs-12">
+                                    {{ $formation->status_label }}
+                                </div>
                             </div>
-                            <div class="vr"></div>
-                            <div>Date création :
-                                <span class="fw-medium">{{ $formation->created_at->format('d M, Y') }}</span>
-                            </div>
-                            <div class="vr"></div>
-                            <div>Date limite :
-                                <span class="fw-medium">{{ $formation->deadline->format('d M, Y') }}</span>
-                            </div>
-                            <div class="vr"></div>
-                            {{-- Add Start at field here --}}
-                            <div>Date de début :
-                                <span class="fw-medium">
-                                    {{ $formation->start_at ? \Carbon\Carbon::parse($formation->start_at)->format('d M, Y') : 'Non défini' }}
-                                </span>
-                            </div>
-                            <div class="vr"></div>
-                            <div class="badge rounded-pill {{ $formation->status_class }} fs-12">
-                                {{ $formation->status_label }}
-                            </div>
-                        </div>
-
                         </div>
                     </div>
 
@@ -84,6 +83,14 @@
                                 S’inscrire
                             </a>
                         </li>
+                        {{-- New Tab: Attestation --}}
+                        @if($requestStatus == 4) {{-- If Confirmed --}}
+                            <li class="nav-item">
+                                <a id="attestation-tab-btn" class="nav-link fw-semibold" data-bs-toggle="tab" href="#tab-attestation" role="tab">
+                                    Attestation
+                                </a>
+                            </li>
+                        @endif
                     </ul>
                 </div>
             </div>
@@ -199,22 +206,40 @@
                                 </p>
 
                                 @if($alreadyRequested)
-                                    <button class="btn btn-secondary btn-lg mb-2" disabled>
+                                    <button class="btn btn-secondary btn-sm mb-2" disabled>
                                         Demande déjà envoyée
                                     </button>
                                     <div>
                                         <small>Status actuel :
                                             <span class="badge bg-info fs-6 px-3 py-1">
-                                                {{ $statusLabels[$requestStatus] ?? $statusLabels[0] }}
+                                                {{ $statusLabels[$requestStatus] ?? 'En attente' }}
                                             </span>
                                         </small>
                                     </div>
+
+                                    @if($requestStatus == 1) {{-- If Accepted --}}
+                                        <form method="POST" action="{{ route('user.formations.confirm_or_reject', $formation) }}">
+                                            @csrf
+                                            <button type="submit" name="action" value="confirm" class="btn btn-success btn-sm mb-3">
+                                                Confirmer
+                                            </button>
+                                            <button type="submit" name="action" value="reject" class="btn btn-danger btn-sm mb-3">
+                                                Refuser
+                                            </button>
+                                        </form>
+                                    @endif
+
+                                    @if($requestStatus == 4) {{-- If Confirmed --}}
+                                        <p class="text-success">Votre demande a été confirmée.</p>
+                                    @elseif($requestStatus == 2) {{-- If Rejected --}}
+                                        <p class="text-danger">Votre demande a été rejetée.</p>
+                                    @endif
                                 @else
                                     <form id="inscription-form" method="POST"
                                           action="{{ route('user.formations.request', $formation) }}">
                                         @csrf
                                         <button id="inscription-btn"
-                                                class="btn btn-primary btn-lg mb-5">
+                                                class="btn btn-primary btn-sm mb-5">
                                             <i class="ri-pencil-fill align-bottom"></i> S’inscrire
                                         </button>
                                     </form>
@@ -224,6 +249,18 @@
                     </div>
                 </div><!-- end tab-inscrire -->
 
+                {{-- Onglet Attestation (blank for now) --}}
+                @if($requestStatus == 4) {{-- If Confirmed --}}
+                    <div class="tab-pane fade" id="tab-attestation" role="tabpanel">
+                        <div class="card">
+                            <div class="card-body">
+                                <h6 class="fw-semibold text-uppercase mb-3">Attestation</h6>
+                                <!-- Content will be added later -->
+                            </div>
+                        </div>
+                    </div><!-- end tab-attestation -->
+                @endif
+
             </div><!-- end tab-content -->
         </div>
     </div><!-- end row -->
@@ -231,8 +268,8 @@
 @endsection
 
 @push('scripts')
-    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-    <script>
+<script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<script>
     document.addEventListener('DOMContentLoaded', () => {
         if (window.feather) feather.replace();
 
@@ -282,5 +319,5 @@
             }});
         @endif
     });
-    </script>
+</script>
 @endpush
