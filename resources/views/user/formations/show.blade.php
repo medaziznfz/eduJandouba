@@ -84,7 +84,7 @@
                             </a>
                         </li>
                         {{-- New Tab: Attestation --}}
-                        @if($requestStatus == 4) {{-- If Confirmed --}}
+                        @if($formation->status == 'in_progress' && $requestStatus == 4) {{-- If Confirmed --}}
                             <li class="nav-item">
                                 <a id="attestation-tab-btn" class="nav-link fw-semibold" data-bs-toggle="tab" href="#tab-attestation" role="tab">
                                     Attestation
@@ -249,7 +249,7 @@
                         </div>
                     </div>
                 </div><!-- end tab-inscrire -->
-                @if($requestStatus == 4) {{-- If Confirmed --}}
+                @if($formation->status == 'in_progress' && $requestStatus == 4) {{-- If Confirmed --}}
                     <div class="tab-pane fade" id="tab-attestation" role="tabpanel">
                         <div class="card">
                             <div class="card-body">

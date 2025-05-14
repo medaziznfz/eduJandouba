@@ -10,7 +10,7 @@ use Illuminate\Support\Str;
 use App\Mail\ConfirmationDemandeMail;
 use App\Mail\DemandeDeclinedMail;
 
-class EtabDashboardController extends Controller
+class EtabController extends Controller
 {
     /**
      * Affiche la liste des demandes pour l'établissement connecté,
@@ -30,7 +30,7 @@ class EtabDashboardController extends Controller
             )
             ->get();
 
-        return view('etab.dashboard', compact('demandes'));
+        return view('etab.requests', compact('demandes'));
     }
 
     /**

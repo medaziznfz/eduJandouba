@@ -1,20 +1,19 @@
 @extends('layouts.app')
 
 @section('content')
-    <div class="row mb-3">
-        <div class="col text-start">
-            <a href="{{ route('univ.formations.index') }}" class="btn btn-sm btn-secondary">
-                <i class="ri-arrow-go-back-line align-bottom"></i> Retour
-            </a>
-        </div>
+    <div class="row mb-3 position-relative" style="z-index:2;">
         <div class="col text-end">
             @if($formation->status !== 'completed')
                 <a href="{{ route('univ.formations.edit', $formation) }}" class="btn btn-sm btn-warning me-2">
                     <i class="ri-pencil-line align-bottom"></i> Éditer
                 </a>
             @endif
+            <a href="{{ route('univ.formations.index') }}" class="btn btn-sm btn-secondary">
+                <i class="ri-arrow-go-back-line align-bottom"></i> Retour
+            </a>
         </div>
     </div>
+
 
     {{-- En-tête + Onglets --}}
     <div class="row">

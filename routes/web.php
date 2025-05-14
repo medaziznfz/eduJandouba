@@ -3,7 +3,7 @@
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\AuthController;
-use App\Http\Controllers\EtabDashboardController;
+use App\Http\Controllers\EtabController;
 use App\Http\Controllers\RegistrationCompletionController;
 use App\Http\Controllers\FormationController;
 use App\Models\Etablissement;
@@ -134,23 +134,27 @@ Route::middleware(['auth','role:user'])->group(function () {
 
 // 🔹 Dashboard validateur établissement (« etab »)
 Route::middleware(['auth','role:etab'])->group(function () {
-    // Liste & actions sur les demandes
-    Route::get('/etab/dashboard', [EtabDashboardController::class, 'index'])
+
+
+     Route::get('/etab/dashboard', fn() => view('etab.dashboard'))
          ->name('etab.dashboard');
+    // Liste & actions sur les demandes
+    Route::get('/etab/resuests', [EtabController::class, 'index'])
+         ->name('etab.requests');
     Route::post('/etab/demande/{demande}/update-status', 
-         [EtabDashboardController::class, 'updateStatus']
+         [EtabController::class, 'updateStatus']
     )->whereNumber('demande');
     Route::post('/etab/demande/{demande}/decline', 
-         [EtabDashboardController::class, 'decline']
+         [EtabController::class, 'decline']
     )->whereNumber('demande');
     Route::post('/etab/demandes/batch-update', 
-         [EtabDashboardController::class, 'batchUpdate']
+         [EtabController::class, 'batchUpdate']
     )->name('etab.demandes.batchUpdate');
     Route::delete('/etab/demande/{demande}', 
-         [EtabDashboardController::class, 'destroy']
+         [EtabController::class, 'destroy']
     )->whereNumber('demande');
     Route::delete('/etab/demandes/batch-delete', 
-         [EtabDashboardController::class, 'batchDestroy']
+         [EtabController::class, 'batchDestroy']
     )->name('etab.demandes.batchDestroy');
 });
 

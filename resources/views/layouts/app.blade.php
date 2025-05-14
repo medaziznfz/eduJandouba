@@ -376,16 +376,15 @@
                     </button>
                     <div class="dropdown-menu dropdown-menu-end">
                         <!-- item-->
-                        <h6 class="dropdown-header">Welcome Anna!</h6>
+                        <h6 class="dropdown-header">Bienvenue!</h6>
                         <a class="dropdown-item" href="pages-profile.html"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Profile</span></a>
                         <a class="dropdown-item" href="apps-chat.html"><i class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Messages</span></a>
-                        <a class="dropdown-item" href="apps-tasks-kanban.html"><i class="mdi mdi-calendar-check-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Taskboard</span></a>
-                        <a class="dropdown-item" href="pages-faqs.html"><i class="mdi mdi-lifebuoy text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Help</span></a>
                         <div class="dropdown-divider"></div>
-                        <a class="dropdown-item" href="pages-profile.html"><i class="mdi mdi-wallet text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Balance : <b>$5971.67</b></span></a>
                         <a class="dropdown-item" href="pages-profile-settings.html"><span class="badge bg-success-subtle text-success mt-1 float-end">New</span><i class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Settings</span></a>
-                        <a class="dropdown-item" href="auth-lockscreen-basic.html"><i class="mdi mdi-lock text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Lock screen</span></a>
-                        <a class="dropdown-item" href="auth-logout-basic.html"><i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> <span class="align-middle" data-key="t-logout">Logout</span></a>
+                        <a class="dropdown-item" href="{{ route('logout') }}">
+                            <i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i>
+                            <span class="align-middle" data-key="t-logout">Logout</span>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -501,25 +500,24 @@
                             href="#"
                             >
                                 <i class="ri-user-line"></i> 
-                                <span>Mes informations</span>
+                                <span>Mes formations</span>
                             </a>
                         </li>
                         @elseif(auth()->user()->role === 'etab')
                             <!-- menu spécifique validateur établissement -->
                             <li class="nav-item">
-                                <a class="nav-link menu-link" href="{{ route('etab.applications.index') }}">
-                                    <i class="ri-file-search-line"></i>
-                                    <span>Valider les demandes</span>
-                                </a>
-                                </li>
-                        @elseif(auth()->user()->role === 'univ')
-                        <li class="nav-item">
-                            <a class="nav-link menu-link" href="#">
-                                <i class="ri-building-line"></i>
-                                <span>Validation université</span>
+                            <a class="nav-link menu-link" href="{{ route('etab.requests') }}">
+                                <i class="ri-file-search-line"></i>
+                                <span>Valider les demandes d'inscription</span>
                             </a>
                             </li>
-
+                            <li class="nav-item">
+                            <a class="nav-link menu-link" href="{{ route('etab.applications.index') }}">
+                                <i class="ri-file-search-line"></i>
+                                <span>Valider les demandes de participation</span>
+                            </a>
+                            </li>
+                        @elseif(auth()->user()->role === 'univ')
                             <li class="nav-item">
                             <a class="nav-link collapsed"
                                 data-bs-toggle="collapse"
@@ -552,7 +550,7 @@
                                 <a class="nav-link menu-link {{ request()->routeIs('univ.applications.*') ? 'active' : '' }}"
                                 href="{{ route('univ.applications.index') }}">
                                 <i class="ri-building-line"></i>
-                                <span>Validation université</span>
+                                <span>Valider les demandes de participation</span>
                                 </a>
                             </li>
 
