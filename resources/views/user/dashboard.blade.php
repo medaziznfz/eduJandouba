@@ -38,38 +38,18 @@
                             <i class="ri-file-search-line text-info fs-2"></i>
                         </div>
                         <div class="flex-grow-1 ms-3">
-                            <p class="card-text"><span class="fw-medium">Mes demandes d'inscription</span></p>
+                            <p class="card-text"><span class="fw-medium">Mes formations</span></p>
                         </div>
                     </div>
                 </div>
                 <div class="card-footer">
                     <div class="text-center">
-                        <a href="#" class="link-info">Voir mes demandes <i class="ri-arrow-right-s-line align-middle lh-1"></i></a>
+                        <a href="{{ route('user.myFormations') }}" class="link-info">Voir mes formations<i class="ri-arrow-right-s-line align-middle lh-1"></i></a>
                     </div>
                 </div>
             </div>
         </div><!-- end col -->
 
-        <!-- Card for "Compléter mon inscription" -->
-        <div class="col-xl-4">
-            <div class="card card-warning">
-                <div class="card-body">
-                    <div class="d-flex align-items-center">
-                        <div class="flex-shrink-0">
-                            <i class="ri-check-line text-warning fs-2"></i>
-                        </div>
-                        <div class="flex-grow-1 ms-3">
-                            <p class="card-text"><span class="fw-medium">Compléter mon inscription</span></p>
-                        </div>
-                    </div>
-                </div>
-                <div class="card-footer">
-                    <div class="text-center">
-                        <a href="#" class="link-warning">Compléter l'inscription <i class="ri-arrow-right-s-line align-middle lh-1"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div><!-- end col -->
 
     </div><!-- end row -->
 
