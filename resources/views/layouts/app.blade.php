@@ -494,12 +494,11 @@
                             </a>
                         </li>
 
-                        <li class="nav-item">
+                       <li class="nav-item">
                             <a 
-                            class="nav-link menu-link" 
-                            href="#"
-                            >
-                                <i class="ri-user-line"></i> 
+                                class="nav-link menu-link {{ request()->routeIs('user.myFormations') ? 'active' : '' }}" 
+                                href="{{ route('user.myFormations') }}">
+                                <i class="ri-user-line"></i>
                                 <span>Mes formations</span>
                             </a>
                         </li>

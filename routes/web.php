@@ -11,6 +11,7 @@ use App\Http\Controllers\UserFormationController;
 use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\UniversityApplicationController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\MyFormationController;
 
 
 
@@ -130,6 +131,8 @@ Route::middleware(['auth','role:user'])->group(function () {
       )->name('user.formations.request');
 
      Route::get('/formation/{id}/download-pdf', [UserFormationController::class, 'downloadPDF'])->name('formation.downloadPDF');
+     
+     Route::get('/user/my-formations', [MyFormationController::class, 'index'])->name('user.myFormations');
 });
 
 // 🔹 Dashboard validateur établissement (« etab »)
