@@ -22,8 +22,11 @@ class Formation extends Model
     /**
      * Casts for native types.
      */
+
     protected $casts = [
         'deadline' => 'date',
+        'start_at' => 'datetime',
+        'deadline' => 'datetime',
     ];
 
     /**
@@ -73,7 +76,7 @@ class Formation extends Model
     public function applicants()
     {
         return $this->belongsToMany(User::class, 'formation_user')
-                    ->withPivot('status', 'etab_confirmed', 'univ_confirmed', 'user_confirmed') // Include 'status'
+                    ->withPivot('status', 'etab_confirmed', 'univ_confirmed', 'user_confirmed', 'hash')  // Include 'hash'
                     ->withTimestamps();
     }
 

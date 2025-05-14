@@ -20,6 +20,14 @@ use App\Http\Controllers\UserController;
 |--------------------------------------------------------------------------
 */
 
+use App\Http\Controllers\QRController;
+
+// Route to display the QR code generation page (optional)
+Route::get('/qrcode', [QRController::class, 'index'])->name('qrcode.index');
+
+// Route to generate and display the QR code
+Route::get('/generate-qrcode', [QRController::class, 'create'])->name('generate.qrcode');
+
 Route::get('/application/{application}/{hash}/confirm', [UserController::class, 'index'])->name('user.application.index');
 Route::post('/application/{application}/{hash}/confirm', [UserController::class, 'confirmAction'])->name('user.application.confirmAction');
 Route::post('/application/{application}/{hash}/decline', [UserController::class, 'declineAction'])->name('user.application.declineAction');
@@ -120,6 +128,8 @@ Route::middleware(['auth','role:user'])->group(function () {
           '/user/formations/{formation}/request',
           [UserFormationController::class, 'request']
       )->name('user.formations.request');
+
+     Route::get('/formation/{id}/download-pdf', [UserFormationController::class, 'downloadPDF'])->name('formation.downloadPDF');
 });
 
 // 🔹 Dashboard validateur établissement (« etab »)
@@ -186,6 +196,13 @@ Route::prefix('univ')->middleware(['auth','role:univ'])->name('univ.')->group(fu
 Route::middleware(['auth', 'role:univ'])
     ->post('/univ/formations/{formation}/launch', [FormationController::class, 'launch'])
     ->name('univ.formations.launch');
+
+Route::middleware(['auth', 'role:univ'])
+    ->post('/univ/formations/{formation}/completed', [FormationController::class, 'completed'])
+    ->name('univ.formations.completed');
+
+
+
 
 Route::middleware(['auth','role:univ'])
      ->prefix('univ')

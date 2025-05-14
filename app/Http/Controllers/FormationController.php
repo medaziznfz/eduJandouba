@@ -147,20 +147,7 @@ public function update(Request $request, Formation $formation)
 
     public function launch(Formation $formation, Request $request)
     {
-
-         Log::info('Launch method triggered'); // Log this to ensure the method is being hit.
-
-        // Now let's check if we are getting the request data
-        dd($request->all()); // This will stop the execution and display the form data
-
-
-        // Check if the user has the 'univ' role
-        if (Auth::user()->role !== 'univ') {
-            return abort(403, 'Unauthorized action.');
-        }
-
-        // Log the incoming request data for debugging purposes
-        Log::info('User role: ' . Auth::user()->role);
+        Log::info('Launch method triggered');
 
         // Validate form data for formateur name, email, and meet link
         $validatedData = $request->validate([
@@ -181,11 +168,24 @@ public function update(Request $request, Formation $formation)
         // Save the changes to the database
         $formation->save();
 
+        // Optionally, you could log the formation's change of status
+        Log::info("Formation {$formation->titre} status updated to in_progress.");
+
         // Return a success message
         return redirect()->route('univ.formations.show', $formation)
             ->with('success', 'La formation a été lancée avec succès et est maintenant en cours.');
     }
 
+
+
+    public function completed(Formation $formation)
+    {
+        $formation->status = 'completed';  // Change status to completed
+        $formation->save();
+
+        return redirect()->route('univ.formations.show', $formation)
+            ->with('success', 'La formation a été marquée comme complétée.');
+    }
 
 
 

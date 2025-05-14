@@ -23,12 +23,14 @@
         <ul class="nav nav-tabs nav-tabs-custom nav-success mb-3" role="tablist">
           <li class="nav-item"><a class="nav-link active" data-status="all" href="#">Toutes</a></li>
           @foreach($statusLabels as $code => $label)
-            @if($code !== 3)
+            @if($code !== 3)  <!-- Exclude "Liste d'attente" -->
               @php
                 if ($code === 0) {
                   $count = $applications->where('status',0)->where('etab_confirmed',false)->count();
                 } elseif ($code === 1) {
                   $count = $applications->where('etab_confirmed',true)->count();
+                } elseif ($code === 4) {  // Handle confirmed status count
+                  $count = $applications->where('status', 4)->count();
                 } else {
                   $count = $applications->where('status',2)->count();
                 }
@@ -74,8 +76,10 @@
                   <td class="date">{{ $app->created_at->format('d M, Y') }}</td>
                   <td class="status">
                     <span class="badge
-                      {{ $app->status===0?'bg-warning-subtle text-warning':
-                         ($app->status===1?'bg-success-subtle text-success':'bg-danger-subtle text-danger') }}">
+                      {{ $app->status === 0 ? 'bg-warning-subtle text-warning' :
+                         ($app->status === 1 ? 'bg-success-subtle text-success' :
+                         ($app->status === 2 ? 'bg-danger-subtle text-danger' :
+                         ($app->status === 4 ? 'bg-primary-subtle text-primary' : ''))) }}">
                       {{ $statusLabels[$app->status] }}
                     </span>
                   </td>
@@ -108,7 +112,7 @@
                       </li>
                       {{-- Accepter --}}
                       <li class="list-inline-item" data-bs-toggle="tooltip" title="Accepter">
-                        <form action="{{ route('etab.applications.accept',$app->id) }}" method="POST" class="d-inline-block form-action" data-action="accept">
+                        <form action="{{ route('etab.applications.accept', $app->id) }}" method="POST" class="d-inline-block form-action" data-action="accept">
                           @csrf
                           <button type="submit" class="btn p-0 m-0 text-success" @if($app->etab_confirmed) disabled @endif>
                             <i class="ri-checkbox-multiple-fill fs-16"></i>
@@ -117,29 +121,25 @@
                       </li>
                       {{-- Rejeter --}}
                       <li class="list-inline-item" data-bs-toggle="tooltip" title="Rejeter">
-                        <form action="{{ route('etab.applications.reject',$app->id) }}" method="POST" class="d-inline-block form-action" data-action="reject">
+                        <form action="{{ route('etab.applications.reject', $app->id) }}" method="POST" class="d-inline-block form-action" data-action="reject">
                           @csrf
-                          <button type="submit" class="btn p-0 m-0 text-danger" @if($app->status===2) disabled @endif>
+                          <button type="submit" class="btn p-0 m-0 text-danger" @if($app->status === 2) disabled @endif>
                             <i class="ri-close-circle-line fs-16"></i>
                           </button>
                         </form>
                       </li>
                       {{-- Restaurer --}}
                       <li class="list-inline-item" data-bs-toggle="tooltip" title="Restaurer en attente">
-                        <form action="{{ route('etab.applications.restore', $app->id) }}"
-                              method="POST"
-                              class="d-inline-block form-action"
-                              data-action="restore">
+                        <form action="{{ route('etab.applications.restore', $app->id) }}" method="POST" class="d-inline-block form-action" data-action="restore">
                           @csrf
-                          <button type="submit" class="btn p-0 m-0 text-secondary"
-                                  @if($app->status === 0 && !$app->etab_confirmed) disabled @endif>
+                          <button type="submit" class="btn p-0 m-0 text-secondary" @if($app->status === 0 && !$app->etab_confirmed) disabled @endif>
                             <i class="ri-restart-fill fs-16"></i>
                           </button>
                         </form>
                       </li>
                       {{-- Supprimer --}}
                       <li class="list-inline-item" data-bs-toggle="tooltip" title="Supprimer">
-                        <form action="{{ route('etab.applications.destroy',$app->id) }}" method="POST" class="d-inline-block form-action" data-action="delete">
+                        <form action="{{ route('etab.applications.destroy', $app->id) }}" method="POST" class="d-inline-block form-action" data-action="delete">
                           @csrf @method('DELETE')
                           <button type="submit" class="btn p-0 m-0 text-danger"><i class="ri-delete-bin-5-fill fs-16"></i></button>
                         </form>

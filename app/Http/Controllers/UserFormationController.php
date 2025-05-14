@@ -5,6 +5,9 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use App\Models\Formation;
+use Endroid\QrCode\QrCode;
+use Endroid\QrCode\Writer\PngWriter;
+use Mpdf\Mpdf;
 
 class UserFormationController extends Controller
 {
@@ -26,45 +29,75 @@ class UserFormationController extends Controller
     }
 
     public function show(Formation $formation)
-    {
-        $user = Auth::user();
+{
+    $user = Auth::user();
 
-        // Security: only allow if grade matches
-        if ($user->grade_id && ! $formation->grades->contains('id', $user->grade_id)) {
-            abort(403);
-        }
-
-        // Pull the pivot row (if any), only if the user has requested the formation
-        $pivot = $formation->applicants()
-            ->where('user_id', $user->id)
-            ->first()?->pivot;
-
-        // Check if the user has already requested the formation
-        $alreadyRequested = (bool) $pivot;
-        $requestStatus = $pivot ? $pivot->status : 0;  // Default to 0 if pivot is null
-
-        // Human-readable labels for the request statuses
-        $statusLabels = [
-            0 => 'En attente',
-            1 => 'Acceptée',
-            2 => 'Refusée',
-            3 => 'Liste d’attente',
-            4 => 'Confirmée',  // Added for Confirmed status
-        ];
-
-        // Ensure that requestStatus is a valid key in statusLabels
-        if (!array_key_exists($requestStatus, $statusLabels)) {
-            $requestStatus = 0; // Default to 'En attente' if the status is invalid
-        }
-
-        return view('user.formations.show', compact(
-            'formation',
-            'alreadyRequested',
-            'requestStatus',
-            'statusLabels',
-            'pivot' // Pass the pivot to the view, so you can access it
-        ));
+    // Security: only allow if grade matches
+    if ($user->grade_id && !$formation->grades->contains('id', $user->grade_id)) {
+        abort(403);
     }
+
+    // Pull the pivot row (if any), only if the user has requested the formation
+    $pivot = $formation->applicants()
+        ->where('user_id', $user->id)
+        ->first()?->pivot;
+
+    // Check if the user has already requested the formation
+    $alreadyRequested = (bool) $pivot;
+    $requestStatus = $pivot ? $pivot->status : 0;  // Default to 0 if pivot is null
+
+    // Human-readable labels for the request statuses
+    $statusLabels = [
+        0 => 'En attente',
+        1 => 'Acceptée',
+        2 => 'Refusée',
+        3 => 'Liste d’attente',
+        4 => 'Confirmée',  // Added for Confirmed status
+    ];
+
+    // Ensure that requestStatus is a valid key in statusLabels
+    if (!array_key_exists($requestStatus, $statusLabels)) {
+        $requestStatus = 0; // Default to 'En attente' if the status is invalid
+    }
+
+    // Get user details for the Attestation tab
+    $userDetails = [
+        'name' => $user->prenom . ' ' . $user->nom,
+        'email' => $user->email,
+        'cin' => $user->cin,
+        'telephone' => $user->telephone,
+        'etablissement' => $user->etablissement->nom ?? 'Non défini',
+        'grade' => $user->grade->nom ?? 'Non défini',
+    ];
+
+    // Get the hash value from the pivot table
+    $hash = $pivot ? $pivot->hash : null;
+
+    // Generate QR Code for the hash (use the hash field from the pivot table)
+    if (is_null($hash)) {
+        $hash = 'default_hash_value'; // Set a default value if hash is null
+    }
+
+    $qrCode = new QrCode($hash);  // Generate QR code based on the hash
+    $writer = new PngWriter();
+    $qrCodeData = $writer->write($qrCode);
+    $base64QrCode = base64_encode($qrCodeData->getString());
+    $qrCodeImage = 'data:image/png;base64,' . $base64QrCode;
+
+    // Return the view with all data
+    return view('user.formations.show', compact(
+        'formation',
+        'alreadyRequested',
+        'requestStatus',
+        'statusLabels',
+        'pivot', // Pass the pivot to the view, so you can access it
+        'qrCodeImage', // Pass the QR code to the view
+        'userDetails' // Pass user details to the view
+    ));
+}
+
+
+
 
     public function request(Formation $formation)
     {
@@ -113,4 +146,44 @@ class UserFormationController extends Controller
 
         return redirect()->route('user.formations.show', $formation)->with('success', $message);
     }
+
+    public function downloadPDF($id)
+{
+    $formation = Formation::findOrFail($id);
+    $user = Auth::user();  // Get the currently authenticated user
+
+    // Check if there's an application request
+    $pivot = $formation->applicants()->where('user_id', $user->id)->first()?->pivot;
+    if (!$pivot) {
+        return redirect()->route('user.formations.show', $formation)->with('error', 'Vous n\'avez pas de demande pour cette formation.');
+    }
+
+    // Get the user's application request details
+    $hash = $pivot->hash;
+    $qrCode = new QrCode($hash);  // Generate QR code based on the hash
+    $writer = new PngWriter();
+    $qrCodeData = $writer->write($qrCode);
+    $base64QrCode = base64_encode($qrCodeData->getString());
+
+    // Create mPDF instance
+    $mpdf = new Mpdf([
+        'mode' => 'utf-8',
+        'format' => 'A4',
+        'autoLangToFont' => true,
+        'autoScriptToLang' => true,
+    ]);
+
+    // Prepare the HTML for the PDF
+    $html = view('user.formations.pdf', [
+        'formation' => $formation,
+        'user' => $user,
+        'qrCodeImage' => 'data:image/png;base64,' . $base64QrCode,
+    ])->render();
+
+    // Write HTML content to the PDF
+    $mpdf->WriteHTML($html);
+
+    // Output the PDF as download
+    return $mpdf->Output('attestation-' . $formation->id . '.pdf', 'D');
+}
 }

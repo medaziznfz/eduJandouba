@@ -23,7 +23,13 @@ class ApplicationController extends Controller
 
         $currentStatus = $request->get('status', 'all');
         if ($currentStatus !== 'all') {
-            $q->where('status', (int)$currentStatus);
+            $q->where(function($query) use ($currentStatus) {
+                if ($currentStatus == 4) {
+                    $query->where('status', 4); // Confirmed status
+                } else {
+                    $query->where('status', (int)$currentStatus);
+                }
+            });
         }
 
         $applications = $q->orderBy('created_at','desc')
@@ -35,6 +41,7 @@ class ApplicationController extends Controller
             1 => 'Acceptée',
             2 => 'Rejetée',
             3 => 'Liste d\'attente',
+            4 => 'Confirmée', // Added Confirmed status
         ];
 
         return view('etab.applications.index', compact(
