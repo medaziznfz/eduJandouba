@@ -503,84 +503,114 @@
                             </a>
                         </li>
                         @elseif(auth()->user()->role === 'etab')
-                            <!-- menu spécifique validateur établissement -->
-                            <li class="nav-item">
+                        <!-- Menu spécifique validateur établissement -->
+                        <li class="nav-item">
                             <a class="nav-link menu-link" href="{{ route('etab.requests') }}">
                                 <i class="ri-file-search-line"></i>
                                 <span>Valider les demandes d'inscription</span>
                             </a>
-                            </li>
-                            <li class="nav-item">
+                        </li>
+                        <li class="nav-item">
                             <a class="nav-link menu-link" href="{{ route('etab.applications.index') }}">
                                 <i class="ri-file-search-line"></i>
                                 <span>Valider les demandes de participation</span>
                             </a>
-                            </li>
+                        </li>
+
+                        <!-- New User Management Section for Etab -->
+                        <li class="nav-item">
+                            <a class="nav-link collapsed"
+                                data-bs-toggle="collapse"
+                                href="#sidebarEtabUsers"
+                                role="button"
+                                aria-expanded="false"
+                                aria-controls="sidebarEtabUsers">
+                                <i class="ri-user-line"></i>
+                                <span>Gestion des utilisateurs</span>
+                            </a>
+                            <div class="collapse menu-dropdown" id="sidebarEtabUsers">
+                                <ul class="nav nav-sm flex-column">
+                                    <li class="nav-item">
+                                        <a href="{{ route('etab.users.index') }}"
+                                            class="nav-link" data-key="t-list">
+                                            Liste des utilisateurs
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('etab.users.create') }}"
+                                            class="nav-link" data-key="t-create-project">
+                                            Ajouter un utilisateur
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
+
                         @elseif(auth()->user()->role === 'univ')
-    <li class="nav-item">
-        <a class="nav-link collapsed"
-            data-bs-toggle="collapse"
-            href="#sidebarFormations"
-            role="button"
-            aria-expanded="false"
-            aria-controls="sidebarFormations">
-            <i class="ri-folder-line"></i>
-            <span>Formations</span>
-        </a>
-        <div class="collapse menu-dropdown" id="sidebarFormations">
-            <ul class="nav nav-sm flex-column">
-                <li class="nav-item">
-                    <a href="{{ route('univ.formations.index') }}"
-                    class="nav-link" data-key="t-list">
-                    Liste
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('univ.formations.create') }}"
-                    class="nav-link" data-key="t-create-project">
-                    Créer formation
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </li>
+                        <li class="nav-item">
+                            <a class="nav-link collapsed"
+                                data-bs-toggle="collapse"
+                                href="#sidebarFormations"
+                                role="button"
+                                aria-expanded="false"
+                                aria-controls="sidebarFormations">
+                                <i class="ri-folder-line"></i>
+                                <span>Formations</span>
+                            </a>
+                            <div class="collapse menu-dropdown" id="sidebarFormations">
+                                <ul class="nav nav-sm flex-column">
+                                    <li class="nav-item">
+                                        <a href="{{ route('univ.formations.index') }}"
+                                        class="nav-link" data-key="t-list">
+                                        Liste
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('univ.formations.create') }}"
+                                        class="nav-link" data-key="t-create-project">
+                                        Créer formation
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
 
-    <li class="nav-item">
-        <a class="nav-link menu-link {{ request()->routeIs('univ.applications.*') ? 'active' : '' }}"
-        href="{{ route('univ.applications.index') }}">
-        <i class="ri-building-line"></i>
-        <span>Valider les demandes de participation</span>
-        </a>
-    </li>
+                        <li class="nav-item">
+                            <a class="nav-link menu-link {{ request()->routeIs('univ.applications.*') ? 'active' : '' }}"
+                            href="{{ route('univ.applications.index') }}">
+                            <i class="ri-building-line"></i>
+                            <span>Valider les demandes de participation</span>
+                            </a>
+                        </li>
 
-    <!-- New User Management Section -->
-    <li class="nav-item">
-        <a class="nav-link collapsed"
-            data-bs-toggle="collapse"
-            href="#sidebarUsers"
-            role="button"
-            aria-expanded="false"
-            aria-controls="sidebarUsers">
-            <i class="ri-user-line"></i>
-            <span>Gestion des utilisateurs</span>
-        </a>
-        <div class="collapse menu-dropdown" id="sidebarUsers">
-            <ul class="nav nav-sm flex-column">
-                <li class="nav-item">
-                    <a href="{{ route('univ.users.index') }}"
-                    class="nav-link" data-key="t-list">
-                    Liste des utilisateurs
-                    </a>
-                </li>
-                <li class="nav-item">
-                    <a href="{{ route('univ.users.create') }}"
-                    class="nav-link" data-key="t-create-project">
-                    Ajouter un utilisateur
-                    </a>
-                </li>
-            </ul>
-        </div>
-    </li>
+                        <!-- New User Management Section -->
+                        <li class="nav-item">
+                            <a class="nav-link collapsed"
+                                data-bs-toggle="collapse"
+                                href="#sidebarUsers"
+                                role="button"
+                                aria-expanded="false"
+                                aria-controls="sidebarUsers">
+                                <i class="ri-user-line"></i>
+                                <span>Gestion des utilisateurs</span>
+                            </a>
+                            <div class="collapse menu-dropdown" id="sidebarUsers">
+                                <ul class="nav nav-sm flex-column">
+                                    <li class="nav-item">
+                                        <a href="{{ route('univ.users.index') }}"
+                                        class="nav-link" data-key="t-list">
+                                        Liste des utilisateurs
+                                        </a>
+                                    </li>
+                                    <li class="nav-item">
+                                        <a href="{{ route('univ.users.create') }}"
+                                        class="nav-link" data-key="t-create-project">
+                                        Ajouter un utilisateur
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li>
 
 
                         @elseif(auth()->user()->role === 'super')

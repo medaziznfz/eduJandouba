@@ -11,7 +11,7 @@
           <h5 class="card-title mb-3 mb-md-0 flex-grow-1">Utilisateurs</h5>
           <div class="flex-shrink-0">
             <div class="search-box">
-              <input type="text" class="form-control search" placeholder="Rechercher des utilisateurs…">
+              <input type="text" class="form-control search" placeholder="Rechercher des utilisateurs…" value="{{ request()->search }}">
               <i class="ri-search-line search-icon"></i>
             </div>
           </div>
@@ -21,17 +21,9 @@
       {{-- Role-based tabs --}}
       <div class="card-body pt-0">
         <ul class="nav nav-tabs nav-tabs-custom nav-success mb-3" role="tablist">
-          <li class="nav-item"><a class="nav-link active" data-status="all" href="#">Tous les utilisateurs</a></li>
-          
-          {{-- Dynamic tabs for each role with meaningful names --}}
+          {{-- Only show the 'Établissement' tab --}}
           <li class="nav-item">
-            <a class="nav-link" data-status="univ" href="#">Université</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-status="etab" href="#">Établissement</a>
-          </li>
-          <li class="nav-item">
-            <a class="nav-link" data-status="user" href="#">Utilisateurs</a>
+            <a class="nav-link active" data-status="etab" href="#">Utilisateurs</a>
           </li>
         </ul>
 
@@ -46,13 +38,13 @@
                 <th class="sort" data-sort="nom">Nom</th>
                 <th class="sort" data-sort="email">Email</th>
                 <th class="sort" data-sort="cin" style="width:120px;">CIN</th>
-                <th class="sort" data-sort="grade">Grade</th>
+                <th class="sort" data-sort="etablissement">Établissement</th>
                 <th class="sort" data-sort="role">Rôle</th>
                 <th class="text-end">Actions</th>
               </tr>
             </thead>
             <tbody class="list">
-              @foreach($users as $user)
+              @foreach($etabUsers as $user)
                 <tr data-status="{{ $user->role }}">
                   <th scope="row">
                     <div class="form-check">
@@ -64,20 +56,20 @@
                   <td class="nom">{{ $user->nom }}</td>
                   <td class="email">{{ $user->email }}</td>
                   <td class="cin">{{ $user->cin }}</td>
-                  <td class="grade">{{ optional($user->grade)->nom ?? 'Non défini' }}</td>
+                  <td class="etablissement">{{ optional($user->etablissement)->nom ?? 'Non défini' }}</td>
                   <td class="role">{{ ucfirst($user->role) }}</td>
                   <td class="text-end">
                     <ul class="list-inline hstack gap-2 mb-0">
                       {{-- Edit --}}
                       <li class="list-inline-item" data-bs-toggle="tooltip" title="Éditer">
-                        <a href="{{ route('univ.users.edit', $user->id) }}" class="text-primary">
+                        <a href="{{ route('etab.users.edit', $user->id) }}" class="text-primary">
                           <i class="ri-pencil-fill fs-16"></i>
                         </a>
                       </li>
 
                       {{-- Delete --}}
                       <li class="list-inline-item" data-bs-toggle="tooltip" title="Supprimer">
-                        <form action="{{ route('univ.users.destroy', $user->id) }}" method="POST" class="d-inline-block form-action" data-action="delete">
+                        <form action="{{ route('etab.users.destroy', $user->id) }}" method="POST" class="d-inline-block form-action" data-action="delete">
                           @csrf @method('DELETE')
                           <button type="submit" class="btn p-0 m-0 text-danger">
                             <i class="ri-delete-bin-5-fill fs-16"></i>
@@ -125,6 +117,7 @@
           <dt class="col-sm-3">CIN</dt><dd class="col-sm-9" id="modalCin">—</dd>
           <dt class="col-sm-3">Grade</dt><dd class="col-sm-9" id="modalGrade">—</dd>
           <dt class="col-sm-3">Rôle</dt><dd class="col-sm-9" id="modalRole">—</dd>
+          <dt class="col-sm-3">Établissement</dt><dd class="col-sm-9" id="modalEtablissement">—</dd>
         </dl>
       </div>
       <div class="modal-footer">
@@ -144,7 +137,7 @@
 document.addEventListener('DOMContentLoaded', function() {
   // Init List.js for user list
   const listObj = new List('userList', {
-    valueNames: ['id', 'prenom', 'nom', 'email', 'cin', 'grade', 'role'],
+    valueNames: ['id', 'prenom', 'nom', 'email', 'cin', 'etablissement', 'role'],
     page: 10,
     pagination: true,
     searchClass: 'search'
@@ -156,31 +149,13 @@ document.addEventListener('DOMContentLoaded', function() {
     noResult.style.display = list.matchingItems.length === 0 ? 'block' : 'none';
   });
 
-  // Role-based filtering functionality
-  const tabs = document.querySelectorAll('.nav-tabs-custom .nav-link[data-status]');
-  let activeStatus = 'all';
-  tabs.forEach(tab => {
-    tab.addEventListener('click', e => {
-      e.preventDefault();
-      tabs.forEach(t => t.classList.remove('active'));
-      tab.classList.add('active');
-      activeStatus = tab.dataset.status;
-      listObj.filter(item => {
-        if (activeStatus === 'all') return true;
-        const stat = item.elm.getAttribute('data-status');
-        return stat === activeStatus;
-      });
-      listObj.update();
-    });
-  });
-
   // Show modal for user details
   const showModalEl = document.getElementById('showModal');
   showModalEl.addEventListener('show.bs.modal', event => {
     const btn = event.relatedTarget;
     const map = {
       modalUser: 'user', modalNom: 'nom', modalEmail: 'email',
-      modalCin: 'cin', modalGrade: 'grade', modalRole: 'role'
+      modalCin: 'cin', modalGrade: 'grade', modalRole: 'role', modalEtablissement: 'etablissement'
     };
     Object.entries(map).forEach(([dd, attr]) => {
       const val = btn.getAttribute('data-' + attr) || '—';

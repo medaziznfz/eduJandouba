@@ -247,6 +247,22 @@ Route::middleware(['auth', 'role:univ'])->group(function () {
 
 
 
+use App\Http\Controllers\EtabUserManagementController;
+
+
+Route::middleware(['auth', 'role:etab'])->group(function () {
+    // Routes for Etab User Management
+    Route::get('/etab/users', [EtabUserManagementController::class, 'index'])->name('etab.users.index');
+    Route::get('/etab/users/create', [EtabUserManagementController::class, 'create'])->name('etab.users.create');
+    Route::post('/etab/users', [EtabUserManagementController::class, 'store'])->name('etab.users.store');
+    Route::get('/etab/users/{user}/edit', [EtabUserManagementController::class, 'edit'])->name('etab.users.edit');
+    Route::put('/etab/users/{user}', [EtabUserManagementController::class, 'update'])->name('etab.users.update');
+    Route::delete('/etab/users/{user}', [EtabUserManagementController::class, 'destroy'])->name('etab.users.destroy');
+});
+
+
+
+
 
 // 🔹 Dashboard super-utilisateur (« super »)
 Route::middleware(['auth','role:super'])->group(function () {

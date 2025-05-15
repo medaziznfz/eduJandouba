@@ -89,7 +89,7 @@
                                 S’inscrire
                             </a>
                         </li>
-                        @if($formation->status == 'in_progress' && $requestStatus == 4)
+                        @if(($formation->status == 'available' || $formation->status == 'in_progress')&& $requestStatus == 4)
                             <li class="nav-item">
                                 <a class="nav-link fw-semibold" data-bs-toggle="tab" href="#tab-attestation" role="tab">
                                     Attestation
@@ -255,7 +255,7 @@
                         </div>
                     </div>
                 </div><!-- end tab-inscrire -->
-                @if($formation->status == 'in_progress' && $requestStatus == 4) {{-- If Confirmed --}}
+                @if(($formation->status == 'available' || $formation->status == 'in_progress')&& $requestStatus == 4)
                     <div class="tab-pane fade" id="tab-attestation" role="tabpanel">
                         <div class="card">
                             <div class="card-body">
