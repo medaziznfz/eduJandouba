@@ -31,6 +31,25 @@
                         <input type="text" class="form-control" name="cin" required>
                     </div>
 
+                    <!-- Role field (fixed to 'user') -->
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Rôle</label>
+                        <select class="form-control" name="role" required disabled>
+                            <option value="user" selected>Utilisateur</option>
+                        </select>
+                    </div>
+
+                    <!-- Grade field (required, not pre-selected) -->
+                    <div class="mb-3">
+                        <label for="grade_id" class="form-label">Grade</label>
+                        <select class="form-control" name="grade_id" required>
+                            <option value="" selected disabled>Choisir un grade</option>
+                            @foreach($grades as $grade)
+                                <option value="{{ $grade->id }}">{{ $grade->nom }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+
                     <!-- Etablissement field (disabled and pre-filled) -->
                     <div class="mb-3">
                         <label for="etablissement_id" class="form-label">Établissement</label>
@@ -38,24 +57,6 @@
                             <option value="{{ Auth::user()->etablissement_id }}" selected>
                                 {{ Auth::user()->etablissement->nom }}
                             </option>
-                        </select>
-                    </div>
-
-                    <!-- Grade field (required) -->
-                    <div class="mb-3">
-                        <label for="grade_id" class="form-label">Grade</label>
-                        <select class="form-control" name="grade_id" required>
-                            @foreach($grades as $grade)
-                                <option value="{{ $grade->id }}">{{ $grade->nom }}</option>
-                            @endforeach
-                        </select>
-                    </div>
-
-                    <!-- Role field (fixed to 'user') -->
-                    <div class="mb-3">
-                        <label for="role" class="form-label">Rôle</label>
-                        <select class="form-control" name="role" required disabled>
-                            <option value="user" selected>Utilisateur</option>
                         </select>
                     </div>
 
