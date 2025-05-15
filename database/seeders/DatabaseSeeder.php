@@ -20,17 +20,6 @@ class DatabaseSeeder extends Seeder
         // Récupération de l’établissement pour associer à l'etab
         $etablissement = Etablissement::first(); // ou choisir un ID spécifique
 
-        // 👤 Super utilisateur
-        User::create([
-            'prenom' => 'Admin',
-            'nom' => 'Principal',
-            'email' => 'admin@admin.com',
-            'cin' => '12345678',
-            'telephone' => '99999999',
-            'password' => Hash::make('admin123'),
-            'role' => 'super',
-            'etablissement_id' => null, // optionnel
-        ]);
 
         // 👤 Validateur d’établissement
         User::create([
