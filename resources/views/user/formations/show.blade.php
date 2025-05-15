@@ -19,84 +19,90 @@
 
     {{-- En-tête + onglets --}}
     <div class="row">
-        <div class="col-12">
-            <div class="card mt-n4 mx-n4">
-                <div class="bg-warning-subtle">
-                    <div class="card-body pb-0 px-4 d-flex align-items-center">
-                        {{-- Vignette --}}
-                        <div class="avatar-md me-3">
-                            <div class="avatar-title bg-white rounded-circle">
-                                @if($formation->thumbnail)
-                                    <img src="{{ asset('storage/'.$formation->thumbnail) }}"
-                                         alt="Vignette"
-                                         class="avatar-xs rounded-circle"
-                                         style="object-fit:cover;">
-                                @else
-                                    <i class="ri-image-2-line fs-32 text-secondary"></i>
-                                @endif
+    <div class="col-lg-12">
+        <div class="card mt-n4 mx-n4">
+            <div class="bg-warning-subtle">
+                <div class="card-body pb-0 px-4">
+                    <div class="row mb-3">
+                        <div class="col-md">
+                            <div class="row align-items-center g-3">
+                                <div class="col-md-auto">
+                                    <div class="avatar-md">
+                                        <div class="avatar-title bg-white rounded-circle">
+                                            @if($formation->thumbnail)
+                                                <img src="{{ asset('storage/'.$formation->thumbnail) }}" alt="Vignette" class="avatar-xs rounded-circle" style="object-fit: cover; width: 100%; height: 100%;">
+                                            @else
+                                                <i class="ri-image-2-line fs-32 text-secondary"></i>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md">
+                                    <div>
+                                        <h4 class="fw-bold">{{ $formation->titre }}</h4>
+                                        <div class="hstack gap-3 flex-wrap">
+                                            <div><i class="ri-building-line align-bottom me-1"></i> {{ optional($formation->etablissement)->nom ?? 'Indépendant' }}</div>
+                                            <div class="vr"></div>
+                                            <div>Date création : <span class="fw-medium">{{ $formation->created_at->format('d M, Y') }}</span></div>
+                                            <div class="vr"></div>
+                                            <div>Date limite : <span class="fw-medium">{{ $formation->deadline->format('d M, Y') }}</span></div>
+                                            <div class="vr"></div>
+                                            <div>Date de début : <span class="fw-medium">{{ $formation->start_at ? \Carbon\Carbon::parse($formation->start_at)->format('d M, Y') : 'Non défini' }}</span></div>
+                                            <div class="vr"></div>
+                                            <div class="badge rounded-pill bg-{{ $formation->status == 'available' ? 'success' : ($formation->status == 'in_progress' ? 'warning' : 'primary') }} fs-12">
+                                                {{ ucfirst(str_replace('_',' ',$formation->status)) }}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         </div>
-                        <div>
-                            <h4 class="fw-bold mb-1">{{ $formation->titre }}</h4>
-                            <div class="hstack gap-3 flex-wrap">
-                                <div><i class="ri-building-line align-bottom me-1"></i>
-                                    {{ optional($formation->etablissement)->nom ?? 'Indépendant' }}
-                                </div>
-                                <div class="vr"></div>
-                                <div>Date création :
-                                    <span class="fw-medium">{{ $formation->created_at->format('d M, Y') }}</span>
-                                </div>
-                                <div class="vr"></div>
-                                <div>Date limite :
-                                    <span class="fw-medium">{{ $formation->deadline->format('d M, Y') }}</span>
-                                </div>
-                                <div class="vr"></div>
-                                {{-- Add Start at field here --}}
-                                <div>Date de début :
-                                    <span class="fw-medium">
-                                        {{ $formation->start_at ? \Carbon\Carbon::parse($formation->start_at)->format('d M, Y') : 'Non défini' }}
-                                    </span>
-                                </div>
-                                <div class="vr"></div>
-                                <div class="badge rounded-pill {{ $formation->status_class }} fs-12">
-                                    {{ $formation->status_label }}
-                                </div>
+                        <div class="col-md-auto">
+                            <div class="hstack gap-1 flex-wrap">
+                                <button type="button" class="btn py-0 fs-16 favourite-btn material-shadow-none active">
+                                    <i class="ri-star-fill"></i>
+                                </button>
+                                <button type="button" class="btn py-0 fs-16 text-body material-shadow-none">
+                                    <i class="ri-share-line"></i>
+                                </button>
+                                <button type="button" class="btn py-0 fs-16 text-body material-shadow-none">
+                                    <i class="ri-flag-line"></i>
+                                </button>
                             </div>
                         </div>
                     </div>
-                    <!-- Onglets -->
+
+                    <!-- Tabs -->
                     <ul class="nav nav-tabs-custom border-bottom-0 px-4" role="tablist">
                         <li class="nav-item">
-                            <a id="details-tab-btn" class="nav-link active fw-semibold"
-                            data-bs-toggle="tab" href="#tab-details" role="tab">
+                            <a class="nav-link active fw-semibold" data-bs-toggle="tab" href="#tab-details" role="tab">
                                 Détails
                             </a>
                         </li>
                         <li class="nav-item">
                             <a
-                            id="inscrire-tab-btn"
-                            class="nav-link fw-semibold {{ $formation->status !== 'available' && $formation->status !== 'in_progress' ? 'disabled text-muted' : '' }}"
-                            {{ $formation->status === 'available' || $formation->status === 'in_progress' ? 'data-bs-toggle=tab' : '' }}
-                            href="#tab-inscrire"
-                            role="tab"
-                            @if(!in_array($formation->status, ['available', 'in_progress'])) style="display: none;" @endif>
+                                class="nav-link fw-semibold {{ $formation->status !== 'available' && $formation->status !== 'in_progress' ? 'disabled text-muted' : '' }}"
+                                {{ $formation->status === 'available' || $formation->status === 'in_progress' ? 'data-bs-toggle=tab' : '' }}
+                                href="#tab-inscrire"
+                                role="tab"
+                                @if(!in_array($formation->status, ['available', 'in_progress'])) style="display: none;" @endif>
                                 S’inscrire
                             </a>
                         </li>
-                        {{-- New Tab: Attestation --}}
-                        @if($formation->status == 'in_progress' && $requestStatus == 4) {{-- If Confirmed --}}
+                        @if($formation->status == 'in_progress' && $requestStatus == 4)
                             <li class="nav-item">
-                                <a id="attestation-tab-btn" class="nav-link fw-semibold" data-bs-toggle="tab" href="#tab-attestation" role="tab">
+                                <a class="nav-link fw-semibold" data-bs-toggle="tab" href="#tab-attestation" role="tab">
                                     Attestation
                                 </a>
                             </li>
                         @endif
                     </ul>
-
                 </div>
             </div>
         </div>
-    </div><!-- end row -->
+    </div>
+</div><!-- end row -->
+
 
     {{-- Contenu des onglets --}}
     <div class="row">

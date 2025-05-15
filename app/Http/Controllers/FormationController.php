@@ -51,7 +51,7 @@ class FormationController extends Controller
         'capacite'    => 'required|integer|min:1',
         'sessions'    => 'required|in:1,2,3',
         'deadline'    => 'required|date',
-        'start_at'    => 'nullable|date',  // ← add validation for start_at
+        'start_at'    => 'nullable|date',
         'mode'        => 'required|in:presentielle,a_distance',
         'link'        => 'nullable|url',
         'grades'      => 'required|array|min:1',
@@ -59,6 +59,7 @@ class FormationController extends Controller
     ]);
 
     if ($request->hasFile('thumbnail')) {
+        // Storing the file in the 'formations' folder in 'public' disk
         $data['thumbnail'] = $request->file('thumbnail')->store('formations', 'public');
     }
 
@@ -75,6 +76,7 @@ class FormationController extends Controller
         ->route('univ.formations.index')
         ->with('success', 'Formation créée.');
 }
+
 
 
 public function update(Request $request, Formation $formation)

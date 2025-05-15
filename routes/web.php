@@ -38,6 +38,16 @@ Route::post('/application/{application}/{hash}/decline', [UserController::class,
 Route::post('/user/formations/{formation}/confirm-or-reject', [UserFormationController::class, 'confirmOrReject'])
     ->name('user.formations.confirm_or_reject');
 
+use App\Http\Controllers\DetailsSettingsController;
+
+Route::middleware(['auth'])->group(function () {
+    // Route to show the profile page
+    Route::get('/profile', [DetailsSettingsController::class, 'index'])->name('profile.index');
+    
+    // Route to handle the profile update form submission
+    Route::post('/profile/update', [DetailsSettingsController::class, 'update'])->name('profile.update');
+    Route::post('/profile/change-password', [DetailsSettingsController::class, 'changePassword'])->name('profile.password.update');
+});
 
 
 use Illuminate\Support\Facades\Mail;
@@ -221,6 +231,21 @@ Route::middleware(['auth','role:univ'])
     // Full CRUD for Formations
     Route::resource('formations', FormationController::class);
 });
+
+
+use App\Http\Controllers\UserManagementController;
+
+Route::middleware(['auth', 'role:univ'])->group(function () {
+    // Routes for User Management
+    Route::get('/univ/users', [UserManagementController::class, 'index'])->name('univ.users.index');
+    Route::get('/univ/users/create', [UserManagementController::class, 'create'])->name('univ.users.create');
+    Route::post('/univ/users', [UserManagementController::class, 'store'])->name('univ.users.store');
+    Route::get('/univ/users/{user}/edit', [UserManagementController::class, 'edit'])->name('univ.users.edit');
+    Route::put('/univ/users/{user}', [UserManagementController::class, 'update'])->name('univ.users.update');
+    Route::delete('/univ/users/{user}', [UserManagementController::class, 'destroy'])->name('univ.users.destroy');
+});
+
+
 
 
 // 🔹 Dashboard super-utilisateur (« super »)

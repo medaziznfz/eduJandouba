@@ -377,7 +377,7 @@
                     <div class="dropdown-menu dropdown-menu-end">
                         <!-- item-->
                         <h6 class="dropdown-header">Bienvenue!</h6>
-                        <a class="dropdown-item" href="pages-profile.html"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Profile</span></a>
+                        <a class="dropdown-item" href="{{ route('profile.index') }}"><i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Profile</span></a>
                         <a class="dropdown-item" href="apps-chat.html"><i class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Messages</span></a>
                         <div class="dropdown-divider"></div>
                         <a class="dropdown-item" href="pages-profile-settings.html"><span class="badge bg-success-subtle text-success mt-1 float-end">New</span><i class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i> <span class="align-middle">Settings</span></a>
@@ -517,41 +517,71 @@
                             </a>
                             </li>
                         @elseif(auth()->user()->role === 'univ')
-                            <li class="nav-item">
-                            <a class="nav-link collapsed"
-                                data-bs-toggle="collapse"
-                                href="#sidebarFormations"
-                                role="button"
-                                aria-expanded="false"
-                                aria-controls="sidebarFormations">
-                                <i class="ri-folder-line"></i>
-                                <span>Formations</span>
-                            </a>
-                            <div class="collapse menu-dropdown" id="sidebarFormations">
-                                <ul class="nav nav-sm flex-column">
-                                <li class="nav-item">
-                                    <a href="{{ route('univ.formations.index') }}"
-                                    class="nav-link" data-key="t-list">
-                                    Liste
-                                    </a>
-                                </li>
-                                <li class="nav-item">
-                                    <a href="{{ route('univ.formations.create') }}"
-                                    class="nav-link" data-key="t-create-project">
-                                    Créer formation
-                                    </a>
-                                </li>
-                                </ul>
-                            </div>
-                            </li>
+    <li class="nav-item">
+        <a class="nav-link collapsed"
+            data-bs-toggle="collapse"
+            href="#sidebarFormations"
+            role="button"
+            aria-expanded="false"
+            aria-controls="sidebarFormations">
+            <i class="ri-folder-line"></i>
+            <span>Formations</span>
+        </a>
+        <div class="collapse menu-dropdown" id="sidebarFormations">
+            <ul class="nav nav-sm flex-column">
+                <li class="nav-item">
+                    <a href="{{ route('univ.formations.index') }}"
+                    class="nav-link" data-key="t-list">
+                    Liste
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('univ.formations.create') }}"
+                    class="nav-link" data-key="t-create-project">
+                    Créer formation
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </li>
 
-                            <li class="nav-item">
-                                <a class="nav-link menu-link {{ request()->routeIs('univ.applications.*') ? 'active' : '' }}"
-                                href="{{ route('univ.applications.index') }}">
-                                <i class="ri-building-line"></i>
-                                <span>Valider les demandes de participation</span>
-                                </a>
-                            </li>
+    <li class="nav-item">
+        <a class="nav-link menu-link {{ request()->routeIs('univ.applications.*') ? 'active' : '' }}"
+        href="{{ route('univ.applications.index') }}">
+        <i class="ri-building-line"></i>
+        <span>Valider les demandes de participation</span>
+        </a>
+    </li>
+
+    <!-- New User Management Section -->
+    <li class="nav-item">
+        <a class="nav-link collapsed"
+            data-bs-toggle="collapse"
+            href="#sidebarUsers"
+            role="button"
+            aria-expanded="false"
+            aria-controls="sidebarUsers">
+            <i class="ri-user-line"></i>
+            <span>Gestion des utilisateurs</span>
+        </a>
+        <div class="collapse menu-dropdown" id="sidebarUsers">
+            <ul class="nav nav-sm flex-column">
+                <li class="nav-item">
+                    <a href="{{ route('univ.users.index') }}"
+                    class="nav-link" data-key="t-list">
+                    Liste des utilisateurs
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="{{ route('univ.users.create') }}"
+                    class="nav-link" data-key="t-create-project">
+                    Ajouter un utilisateur
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </li>
+
 
                         @elseif(auth()->user()->role === 'super')
                             <!-- menu spécifique superuser -->
