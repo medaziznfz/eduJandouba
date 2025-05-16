@@ -29,6 +29,14 @@ class RequestController extends Controller
             'email.unique' => 'Cette adresse email est déjà utilisée.',
         ]);
 
+            $etablissementId = $request['etablissement_id'];
+
+            $title        = 'Nouvelle demande reçue';
+            $subtitle     = "Demande d'inscription: {$request['prenom']} {$request['nom']} (CIN : {$request['cin']})";
+            $redirectLink = route('etab.requests.index'); // ou l'URL que tu veux
+
+            notifyEtab($etablissementId, $title, $subtitle, $redirectLink);
+
         Demande::create($request->all());
 
         return redirect('/request')->with('success', 'Votre demande a été envoyée avec succès.');

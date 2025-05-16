@@ -403,6 +403,22 @@
 
   </div>
 
+  <!--start back-to-top-->
+  <button onclick="topFunction()" class="btn btn-danger btn-icon" id="back-to-top">
+      <i class="ri-arrow-up-line"></i>
+  </button>
+  <!--end back-to-top-->
+
+  <!--preloader-->
+  <div id="preloader">
+      <div id="status">
+          <div class="spinner-border text-primary avatar-sm" role="status">
+              <span class="visually-hidden">Loading...</span>
+          </div>
+      </div>
+  </div>
+
+
   <!-- boutons, préchargeur, customizer… -->
   <button onclick="topFunction()" class="btn btn-danger btn-icon" id="back-to-top"><i class="ri-arrow-up-line"></i></button>
   <div id="preloader"><div id="status"><div class="spinner-border text-primary avatar-sm" role="status"><span class="visually-hidden">Loading...</span></div></div></div>
@@ -414,6 +430,8 @@
   <script src="{{ asset('assets/libs/feather-icons/feather.min.js') }}"></script>
   <script src="{{ asset('assets/js/pages/plugins/lord-icon-2.1.0.js') }}"></script>
   <script src="{{ asset('assets/js/plugins.js') }}"></script>
+  <!-- App js -->
+    <script src="{{ asset('assets/js/app.js') }}"></script>
   @stack('scripts')
 
   <script>

@@ -8,6 +8,7 @@ use App\Models\Formation;
 use Endroid\QrCode\QrCode;
 use Endroid\QrCode\Writer\PngWriter;
 use Mpdf\Mpdf;
+use Illuminate\Support\Facades\Log;
 
 class UserFormationController extends Controller
 {
@@ -96,9 +97,6 @@ class UserFormationController extends Controller
     ));
 }
 
-
-
-
     public function request(Formation $formation)
     {
         $user = Auth::user();
@@ -110,11 +108,28 @@ class UserFormationController extends Controller
         $formation->applicants()->attach($user->id);
         $formation->increment('nbre_demandeur');
 
+        // → Maintenant on récupère l’ID de l’établissement depuis l’utilisateur
+        $etabId = $user->etablissement_id;
+
+        // En cas d’utilisateur sans établissement configuré : 
+        if (! $etabId) {
+            Log::warning("Utilisateur {$user->id} sans etablissement_id !");
+            // soit on abort(), soit on continue sans notifier
+        }
+
+        $title        = 'Nouvelle demande de formation';
+        $subtitle     = "L’utilisateur {$user->prenom} {$user->nom} a demandé la formation « {$formation->titre} ».";
+        $redirectLink = route('etab.applications.index');
+
+        // Et on notifie vraiment
+        notifyEtab($etabId, $title, $subtitle, $redirectLink);
+
         return redirect()
             ->route('user.formations.show', ['formation' => $formation, 'tab' => 'inscrire'])
             ->with('success', 'Votre demande a bien été enregistrée et est en attente de validation.');
     }
 
+    
     public function confirmOrReject(Formation $formation, Request $request)
     {
         $user = Auth::user();

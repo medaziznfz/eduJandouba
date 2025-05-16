@@ -54,25 +54,51 @@ class ApplicationController extends Controller
     {
         $this->authorize('manage', $application);
 
+        // 1) On marque la demande comme confirmée par l'établissement
         $application->update([
             'etab_confirmed' => true,
             'status'         => 0,
         ]);
 
-        return back()->with('success','Demande acceptée.');
+        // 2) On notifie tous les users 'univ'
+        $user      = $application->user;
+        $etabName  = optional($user->etablissement)->nom ?? '—';
+
+        $title        = 'Nouvelle demande de formation';
+        $subtitle     = "L’utilisateur {$user->prenom} {$user->nom} de {$etabName} a demandé la formation « {$application->formation->titre} ».";
+        $redirectLink = route('univ.applications.index'); // ajustez vers la bonne route
+
+        notifyUniv($title, $subtitle, $redirectLink);
+
+        // 3) Retour à la page précédente avec un message
+        return back()->with('success', 'Demande acceptée.');
     }
 
     public function reject(ApplicationRequest $application)
     {
         $this->authorize('manage', $application);
 
+        // 1) Marquer la demande comme rejetée
         $application->update([
             'etab_confirmed' => false,
             'status'         => 2,
         ]);
 
+        // 2) Préparer et envoyer la notification à l’utilisateur
+        $userId    = $application->user_id;
+        $formation = $application->formation;
+
+        $title    = 'Demande de formation rejetée';
+        $subtitle = "Votre demande pour la formation « {$formation->titre} » a été rejetée.";
+        // On utilise route() pour générer le lien de redirection
+        $redirectLink = route('user.formations.show', ['formation' => $formation->id]);
+
+        notify($userId, $title, $subtitle, $redirectLink);
+
+        // 3) Redirection via la route nommée
         return back()->with('error','Demande rejetée.');
     }
+
 
     public function restore(ApplicationRequest $application)
     {

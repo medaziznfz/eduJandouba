@@ -9,6 +9,7 @@ use Illuminate\Support\Str;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\ApplicationConfirmation; // <-- Add this line
+use Illuminate\Support\Facades\Log;
 
 
 
@@ -63,34 +64,53 @@ class UniversityApplicationController extends Controller
      * POST /univ/applications/{application}/accept
      */
     public function accept(ApplicationRequest $application)
-    {
-        $this->authorize('manage', $application);
+{
+    $this->authorize('manage', $application);
 
-        // Create a unique hash for confirmation
-        $data = implode('|', [
-            $application->id,
-            $application->user_id,
-            $application->formation_id,
-            $application->created_at->toIsoString(),
-        ]);
+    // 1) Génération d’un hash unique pour la confirmation
+    $data = implode('|', [
+        $application->id,
+        $application->user_id,
+        $application->formation_id,
+        $application->created_at->toIsoString(),
+    ]);
+    $hash = hash('sha256', $data);
 
-        $hash = hash('sha256', $data);
+    // 2) Mise à jour de la demande : acceptée à l’univ + stockage du hash
+    $application->update([
+        'univ_confirmed' => true,
+        'status'         => 1,  // 1 = accepted
+        'hash'           => $hash,
+    ]);
 
-        // Update the application status to accepted and store the hash
-        $application->update([
-            'univ_confirmed' => true,
-            'status' => 1,  // 1 = accepted
-            'hash' => $hash,
-        ]);
+    // 3) Envoi de l’email de confirmation à l’utilisateur
+    Mail::to($application->user->email)
+        ->send(new ApplicationConfirmation($application));
 
-        // Send confirmation email to the user with the confirmation link
-        Mail::to($application->user->email)->send(new ApplicationConfirmation($application));
+    // 4) Incrément du compteur 'nbre_accepted' sur la formation
+    $application->formation()->increment('nbre_accepted');
 
-        // Increment the accepted counter for the formation
-        $application->formation()->increment('nbre_accepted');
+    // 5) Notification in-app à l’utilisateur
+    $userId       = $application->user_id;
+    $formation    = $application->formation;
+    $title        = 'Votre demande a été acceptée';
+    $subtitle     = "Félicitations ! Votre demande pour « {$formation->titre} » a été acceptée. ".
+                    "Un lien de confirmation vous a été envoyé par email.";
+    $redirectLink = route('user.formations.show', ['formation' => $formation->id]);
 
-        return back()->with('success', 'Demande acceptée, un lien de confirmation a été envoyé à l\'utilisateur.');
-    }
+    // (optionnel) log pour debug
+    Log::info('Notification in-app pour acceptance', [
+        'user_id'       => $userId,
+        'application_id'=> $application->id,
+    ]);
+
+    notify($userId, $title, $subtitle, $redirectLink);
+
+    // 6) Retour avec message flash
+    return back()->with('success', 
+        'Demande acceptée ! Un lien de confirmation a été envoyé à l’utilisateur.'
+    );
+}
 
     /**
      * Reject an application request.
@@ -111,6 +131,17 @@ class UniversityApplicationController extends Controller
         if ($wasAccepted) {
             $application->formation()->decrement('nbre_accepted');
         }
+
+        // 2) Préparer et envoyer la notification à l’utilisateur
+        $userId    = $application->user_id;
+        $formation = $application->formation;
+
+        $title    = 'Demande de formation rejetée';
+        $subtitle = "Votre demande pour la formation « {$formation->titre} » a été rejetée.";
+        // On utilise route() pour générer le lien de redirection
+        $redirectLink = route('user.formations.show', ['formation' => $formation->id]);
+
+        notify($userId, $title, $subtitle, $redirectLink);
 
         return back()->with('error', 'Demande rejetée par l’université.');
     }
@@ -135,8 +166,19 @@ class UniversityApplicationController extends Controller
             $application->formation()->decrement('nbre_accepted');
         }
 
-        return back()->with('info', 'Demande mise en liste d’attente.');
+        // Préparer et envoyer la notification à l’utilisateur
+        $userId    = $application->user_id;
+        $formation = $application->formation;
+
+        $title        = 'Votre demande est en liste d’attente';
+        $subtitle     = "La demande pour la formation « {$formation->titre} » a été placée en liste d’attente.";
+        $redirectLink = route('user.formations.show', ['formation' => $formation->id]);
+
+        notify($userId, $title, $subtitle, $redirectLink);
+
+        return back()->with('info', 'Votre demande a bien été mise en liste d’attente.');
     }
+
 
     /**
      * Delete an application request.
