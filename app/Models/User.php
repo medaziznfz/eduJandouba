@@ -57,7 +57,7 @@ class User extends Authenticatable
     public function requestedFormations()
     {
         return $this->belongsToMany(Formation::class)
-                    ->withPivot('etab_confirmed', 'univ_confirmed')
+                    ->withPivot('etab_confirmed', 'univ_confirmed', 'status')
                     ->withTimestamps();
     }
 

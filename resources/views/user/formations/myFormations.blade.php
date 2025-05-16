@@ -98,15 +98,21 @@
                     </div>
 
                     {{-- Application Status --}}
+                    @php
+                        $reqStatus = $formation->pivot->status;
+                        $badgeClasses = [
+                            0 => 'bg-info',     // En attente
+                            1 => 'bg-success',  // Acceptée
+                            2 => 'bg-danger',   // Refusée
+                            3 => 'bg-warning',  // Liste d’attente
+                            4 => 'bg-primary',  // Confirmée
+                        ];
+                    @endphp
+
                     <div class="mt-auto">
                         <p class="mb-2"><strong>Status de la demande :</strong></p>
-                        <span class="badge 
-                            @if($formation->pivot->status == 1) bg-success @elseif($formation->pivot->status == 2) bg-danger @elseif($formation->pivot->status == 3) bg-warning @else bg-info @endif">
-                            @if($formation->pivot->status == 1) Acceptée
-                            @elseif($formation->pivot->status == 2) Refusée
-                            @elseif($formation->pivot->status == 3) Liste d'attente
-                            @else En attente
-                            @endif
+                        <span class="badge {{ $badgeClasses[$reqStatus] ?? 'bg-secondary' }}">
+                            {{ $statusLabels[$reqStatus] ?? '—' }}
                         </span>
                     </div>
 

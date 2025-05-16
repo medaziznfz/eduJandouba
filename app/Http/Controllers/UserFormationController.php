@@ -129,38 +129,61 @@ class UserFormationController extends Controller
             ->with('success', 'Votre demande a bien été enregistrée et est en attente de validation.');
     }
 
-    
+
     public function confirmOrReject(Formation $formation, Request $request)
-    {
-        $user = Auth::user();
+{
+    $user = Auth::user();
 
-        // Ensure the user has requested this formation and its status is 'Acceptée'
-        $pivot = $formation->applicants()
-            ->where('user_id', $user->id)
-            ->first()?->pivot;
+    // 1) Vérifier que l’utilisateur a bien une demande acceptée
+    $pivot = $formation->applicants()
+        ->where('user_id', $user->id)
+        ->first()?->pivot;
 
-        if (!$pivot || $pivot->status !== 1) {  // If the status is not 'Acceptée'
-            return redirect()->route('user.formations.show', $formation)->with('error', 'Action impossible, statut incorrect.');
-        }
-
-        // Determine the action (confirm or reject)
-        if ($request->action === 'confirm') {
-            // Update the status to 'Confirmed' (4)
-            $pivot->update(['status' => 4, 'user_confirmed' => true]);
-
-            // Increment the number of enrolled students
-            $formation->increment('nbre_inscrit');
-            $message = 'Votre demande a été confirmée.';
-        } elseif ($request->action === 'reject') {
-            // Update the status to 'Rejected' (2)
-            $pivot->update(['status' => 2, 'user_confirmed' => false]);
-            $message = 'Votre demande a été rejetée.';
-        } else {
-            return redirect()->route('user.formations.show', $formation)->with('error', 'Action invalide.');
-        }
-
-        return redirect()->route('user.formations.show', $formation)->with('success', $message);
+    if (! $pivot || $pivot->status !== 1) {
+        return redirect()
+            ->route('user.formations.show', ['formation' => $formation->id])
+            ->with('error', 'Action impossible, statut incorrect.');
     }
+
+    // 2) Selon l’action, on met à jour le pivot et on ajuste le compteur
+    if ($request->action === 'confirm') {
+        $pivot->update([
+            'status'         => 4,    // 4 = user_confirmed
+            'user_confirmed' => true,
+        ]);
+        $formation->increment('nbre_inscrit');
+        $message = 'Votre demande a été confirmée.';
+
+        // Préparation de la notif pour l’univ
+        $title    = 'Participation confirmée par l’utilisateur';
+        $subtitle = "L’utilisateur {$user->prenom} {$user->nom} a confirmé sa participation à « {$formation->titre} ».";
+
+    } elseif ($request->action === 'reject') {
+        $pivot->update([
+            'status'         => 2,    // 2 = rejected
+            'user_confirmed' => false,
+        ]);
+        $message = 'Votre demande a été rejetée.';
+
+        // Préparation de la notif pour l’univ
+        $title    = 'Participation rejetée par l’utilisateur';
+        $subtitle = "L’utilisateur {$user->prenom} {$user->nom} a rejeté sa demande pour « {$formation->titre} ».";
+
+    } else {
+        return redirect()
+            ->route('user.formations.show', ['formation' => $formation->id])
+            ->with('error', 'Action invalide.');
+    }
+
+    // 3) On notifie le rôle “univ”
+    $redirectLink = route('univ.applications.index'); 
+    notifyUniv($title, $subtitle, $redirectLink);
+
+    // 4) On retourne avec le message à l’utilisateur
+    return redirect()
+        ->route('user.formations.show', ['formation' => $formation->id])
+        ->with('success', $message);
+}
 
     public function downloadPDF($id)
 {
