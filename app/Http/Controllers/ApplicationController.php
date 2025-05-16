@@ -41,7 +41,6 @@ class ApplicationController extends Controller
             1 => 'Acceptée',
             2 => 'Rejetée',
             3 => 'Liste d\'attente',
-            4 => 'Confirmée', // Added Confirmed status
         ];
 
         return view('etab.applications.index', compact(

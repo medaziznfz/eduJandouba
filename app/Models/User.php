@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
+
 class User extends Authenticatable
 {
     use HasFactory, Notifiable;
@@ -63,5 +64,22 @@ class User extends Authenticatable
     public function applicationRequests()
     {
         return $this->hasMany(ApplicationRequest::class);
+    }
+
+    /**
+     * Relationship: A User has many Notifications.
+     */
+    public function notifications()
+    {
+        return $this->hasMany(Notification::class)->latest();
+    }
+
+
+    /**
+     * Get unread notifications.
+     */
+    public function unreadNotifications()
+    {
+        return $this->notifications()->where('read', false);
     }
 }

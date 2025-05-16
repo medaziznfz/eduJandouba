@@ -21,6 +21,28 @@ use App\Http\Controllers\MyFormationController;
 |--------------------------------------------------------------------------
 */
 
+
+
+use App\Http\Controllers\NotificationController;
+
+// Route for viewing notifications
+Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+
+// Route to mark a specific notification as read
+Route::post('/notifications/{notification}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.mark-as-read');
+
+// Route to mark all notifications as read
+Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.mark-all-as-read');
+
+// Route for sending test notifications
+Route::get('/test-notification', function() {
+    notify(4, 'Test Notification', 'This is a test notification', '/dashboard');
+    return 'Notification sent!';
+});
+
+
+
+
 use App\Http\Controllers\QRController;
 
 // Route to display the QR code generation page (optional)

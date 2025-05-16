@@ -29,8 +29,6 @@
                   $count = $applications->where('status',0)->where('etab_confirmed',false)->count();
                 } elseif ($code === 1) {
                   $count = $applications->where('etab_confirmed',true)->count();
-                } elseif ($code === 4) {  // Handle confirmed status count
-                  $count = $applications->where('status', 4)->count();
                 } else {
                   $count = $applications->where('status',2)->count();
                 }
@@ -58,10 +56,8 @@
                 <th class="sort" data-sort="cin" style="width:120px;">CIN</th>
                 <th class="sort" data-sort="applicant">Candidat</th>
                 <th class="sort" data-sort="date">Date de dépôt</th>
-                <th class="sort" data-sort="status">Statut</th>
-                <th class="sort" data-sort="capacity">Capacité</th>
-                <th class="sort" data-sort="dem">Demandes</th>
-                <th class="sort" data-sort="ins">Inscrits</th>
+                <th class="sort" data-sort="start_at">Date Debut</th>
+                <th class="sort" data-sort="duree">Duree</th>
                 <th class="text-end">Actions</th>
               </tr>
             </thead>
@@ -74,18 +70,8 @@
                   <td class="cin">{{ $app->user->cin }}</td>
                   <td class="applicant">{{ $app->user->prenom }} {{ $app->user->nom }}</td>
                   <td class="date">{{ $app->created_at->format('d M, Y') }}</td>
-                  <td class="status">
-                    <span class="badge
-                      {{ $app->status === 0 ? 'bg-warning-subtle text-warning' :
-                         ($app->status === 1 ? 'bg-success-subtle text-success' :
-                         ($app->status === 2 ? 'bg-danger-subtle text-danger' :
-                         ($app->status === 4 ? 'bg-primary-subtle text-primary' : ''))) }}">
-                      {{ $statusLabels[$app->status] }}
-                    </span>
-                  </td>
-                  <td class="capacity">{{ $app->formation->capacite }}</td>
-                  <td class="dem">{{ $app->formation->nbre_demandeur }}</td>
-                  <td class="ins">{{ $app->formation->nbre_inscrit }}</td>
+                  <td class="start_at">{{ $app->formation->start_at->format('d M, Y') }}</td>
+                  <td class="duree">{{$app->formation->duree}}</td>
                   <td class="text-end">
                     <ul class="list-inline hstack gap-2 mb-0">
                       {{-- Voir --}}
@@ -103,10 +89,7 @@
                            data-duree="{{ $app->formation->duree }}"
                            data-lieu="{{ $app->formation->lieu }}"
                            data-capacite="{{ $app->formation->capacite }}"
-                           data-sessions="{{ $app->formation->sessions }}"
-                           data-mode="{{ $app->formation->mode }}"
-                           data-nbre-dem="{{ $app->formation->nbre_demandeur }}"
-                           data-nbre-ins="{{ $app->formation->nbre_inscrit }}">
+                           data-sessions="{{ $app->formation->sessions }}">
                           <i class="ri-eye-fill fs-16"></i>
                         </a>
                       </li>
@@ -194,9 +177,6 @@
           <dt class="col-sm-3">Lieu</dt><dd class="col-sm-9" id="modalLieu">—</dd>
           <dt class="col-sm-3">Capacité</dt><dd class="col-sm-9" id="modalCapacite">—</dd>
           <dt class="col-sm-3">Sessions</dt><dd class="col-sm-9" id="modalSessions">—</dd>
-          <dt class="col-sm-3">Mode</dt><dd class="col-sm-9" id="modalMode">—</dd>
-          <dt class="col-sm-3">Demandes</dt><dd class="col-sm-9" id="modalNbreDem">—</dd>
-          <dt class="col-sm-3">Inscrits</dt><dd class="col-sm-9" id="modalNbreIns">—</dd>
         </dl>
       </div>
       <div class="modal-footer">
@@ -215,7 +195,7 @@
 document.addEventListener('DOMContentLoaded', function() {
   // init List.js
   const listObj = new List('applicationList', {
-    valueNames: ['id','formation','cin','applicant','date','status','capacity','dem','ins'],
+    valueNames: ['id','formation','cin','applicant','date','start_at','duree'],
     page: 10,
     pagination: true,
     searchClass: 'search'
