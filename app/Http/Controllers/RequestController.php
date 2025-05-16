@@ -33,7 +33,7 @@ class RequestController extends Controller
 
             $title        = 'Nouvelle demande reçue';
             $subtitle     = "Demande d'inscription: {$request['prenom']} {$request['nom']} (CIN : {$request['cin']})";
-            $redirectLink = route('etab.requests.index'); // ou l'URL que tu veux
+            $redirectLink = route('etab.requests'); // ou l'URL que tu veux
 
             notifyEtab($etablissementId, $title, $subtitle, $redirectLink);
 
