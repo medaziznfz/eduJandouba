@@ -32,7 +32,7 @@ class AuthController extends Controller
 
             // Redirection selon rôle (utilise les nouveaux noms courts)
             return match ($user->role) {
-                'super' => redirect()->route('super.dashboard'),
+                'forma' => redirect()->route('forma.dashboard'),
                 'etab' => redirect()->route('etab.dashboard'),
                 'univ' => redirect()->route('univ.dashboard'),
                 'user' => redirect()->route('user.dashboard'),

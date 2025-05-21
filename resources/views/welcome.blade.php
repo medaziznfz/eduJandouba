@@ -84,7 +84,7 @@
                 'user'  => 'user.dashboard',
                 'etab'  => 'etab.dashboard',
                 'univ'  => 'univ.dashboard',
-                'super' => 'super.dashboard',
+                'forma' => 'forma.dashboard',
                 default => 'login'
               };
             @endphp

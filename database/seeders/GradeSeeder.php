@@ -1,5 +1,4 @@
 <?php
-
 namespace Database\Seeders;
 
 use Illuminate\Database\Seeder;
@@ -9,9 +8,18 @@ class GradeSeeder extends Seeder
 {
     public function run()
     {
-        $grades = ['Enseignant', 'technicien supérieur', 'technicien', 'Assistant'];
+        $grades = [
+            'Enseignant',
+            'Technicien supérieur',
+            'Technicien',
+            'Assistant'
+        ];
+
         foreach ($grades as $nom) {
-            Grade::create(['nom' => $nom]);
+            Grade::create([
+                'nom'         => $nom,
+                'description' => "Description pour le grade {$nom}."
+            ]);
         }
     }
 }

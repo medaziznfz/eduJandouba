@@ -360,10 +360,23 @@
                   </ul>
                 </div>
               </li>
-            @elseif(auth()->user()->role === 'super')
+              <li class="nav-item">
+                <a
+                  class="nav-link {{ request()->routeIs('univ.settings.*') ? 'active' : '' }}"
+                  href="{{ route('univ.settings.index') }}"
+                >
+                  <i class="ri-settings-3-line"></i> Gestion des Grades & Établissements
+                </a>
+              </li>
+            @elseif(auth()->user()->role === 'forma')
               <li class="nav-item">
                 <a class="nav-link menu-link" href="#">
                   <i class="ri-shield-user-line"></i> Supervision
+                </a>
+              </li>
+              <li class="nav-item">
+                <a href="{{ route('forma.formations.index') }}" class="nav-link">
+                  <i class="ri-book-open-line"></i> Mes Formations
                 </a>
               </li>
             @endif

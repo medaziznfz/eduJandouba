@@ -1,6 +1,13 @@
 @extends('layouts.app')
 
+@push('styles')
+    <!-- Ajoutez ici vos styles spécifiques si besoin -->
+@endpush
+
 @section('content')
-    <h2 class="text-success">Bienvenue {{ auth()->user()->prenom }} !</h2>
-    <p class="lead">Vous êtes connecté en tant que <strong>{{ auth()->user()->role }}</strong>.</p>
+
 @endsection
+
+@push('scripts')
+    <!-- Ajoutez ici vos scripts spécifiques si besoin -->
+@endpush

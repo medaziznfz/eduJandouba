@@ -242,6 +242,33 @@ Route::middleware(['auth', 'role:univ'])
 
 
 
+use App\Http\Controllers\SettingsController;
+
+Route::middleware(['auth','role:univ'])->prefix('univ/settings')->group(function(){
+    // Show both tabs
+    Route::get('/', [SettingsController::class, 'index'])
+         ->name('univ.settings.index');
+
+    // Grades
+    Route::post('grades',       [SettingsController::class, 'storeGrade'])
+         ->name('univ.settings.grades.store');
+    Route::patch('grades/{grade}', [SettingsController::class, 'updateGrade'])
+         ->name('univ.settings.grades.update');
+    Route::delete('grades/{grade}', [SettingsController::class, 'destroyGrade'])
+         ->name('univ.settings.grades.destroy');
+
+    // Etablissements
+    Route::post('etablissements',       [SettingsController::class, 'storeEtablissement'])
+         ->name('univ.settings.etablissements.store');
+    Route::patch('etablissements/{etablissement}', [SettingsController::class, 'updateEtablissement'])
+         ->name('univ.settings.etablissements.update');
+    Route::delete('etablissements/{etablissement}', [SettingsController::class, 'destroyEtablissement'])
+         ->name('univ.settings.etablissements.destroy');
+});
+
+
+
+
 
 Route::middleware(['auth','role:univ'])
      ->prefix('univ')
@@ -291,3 +318,32 @@ Route::middleware(['auth','role:forma'])->group(function () {
     Route::get('/forma/dashboard', fn() => view('forma.dashboard'))
          ->name('forma.dashboard');
 });
+
+
+// routes/web.php
+use App\Http\Controllers\FormateurFormationController;
+
+Route::middleware(['auth','role:forma'])
+     ->prefix('forma')
+     ->name('forma.')
+     ->group(function() {
+    Route::get('formations',      [FormateurFormationController::class,'index'])
+         ->name('formations.index');
+    Route::get('formations/{formation}', [FormateurFormationController::class,'show'])
+         ->name('formations.show');
+
+    Route::post('formations/{formation}/launch',    [FormateurFormationController::class,'launch'])
+         ->name('formations.launch');
+    Route::post('formations/{formation}/completed',[FormateurFormationController::class,'completed'])
+         ->name('formations.completed');
+
+    // **Remove** the GET /presence route
+    // Route::get('formations/{formation}/presence', [FormateurFormationController::class,'presence'])
+    //      ->name('formations.presence');
+
+    // Keep only POST storePresence
+    Route::post('formations/{formation}/presence', [FormateurFormationController::class,'storePresence'])
+         ->name('formations.presence.store');
+});
+
+
