@@ -318,10 +318,82 @@
                 </div><!-- end tab-inscrire -->
 
                 {{-- Onglet Attestation --}}
-                @if(in_array($formation->status, ['available','in_progress']) && $requestStatus === 4)
+                @if(($formation->status == 'available' || $formation->status == 'in_progress')&& $requestStatus == 4)
                     <div class="tab-pane fade" id="tab-attestation" role="tabpanel">
-                        {{-- ... votre code pour l’attestation ... --}}
-                    </div>
+                        <div class="card">
+                            <div class="card-body">
+                                <!-- Header with logos and information -->
+                                <div class="row justify-content-center">
+                                    <div class="col-xxl-9">
+                                        <div class="card" id="attestation-card">
+                                            <div class="row">
+                                                <div class="col-lg-12">
+                                                    <div class="card-header border-bottom-dashed p-4">
+                                                        <div class="d-flex">
+                                                            <div class="flex-grow-1">
+                                                                <!-- Logos -->
+                                                                <img src="{{ asset('assets/images/logo-dark.png') }}" class="card-logo card-logo-dark" alt="logo dark" height="40">
+                                                                <img src="{{ asset('assets/images/logo-light.png') }}" class="card-logo card-logo-light" alt="logo light" height="40">
+                                                                <div class="mt-sm-5 mt-4">
+                                                                    <h6 class="text-muted text-uppercase fw-semibold">Formation Information</h6>
+                                                                    <p class="text-muted mb-1"><strong>Titre:</strong> {{ $formation->titre }}</p>
+                                                                    <p class="text-muted mb-0"><strong>Date de début:</strong> {{ \Carbon\Carbon::parse($formation->start_at)->format('d M, Y') }}</p>
+                                                                    <p class="text-muted mb-0"><strong>Lieu:</strong> {{ $formation->lieu }}</p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="flex-shrink-0 mt-sm-0 mt-3">
+                                                                <!-- User Info -->
+                                                                <h6><span class="text-muted fw-normal">Nom:</span><span>{{ $userDetails['name'] }}</span></h6>
+                                                                <h6><span class="text-muted fw-normal">Email:</span><span>{{ $userDetails['email'] }}</span></h6>
+                                                                <h6><span class="text-muted fw-normal">CIN:</span><span>{{ $userDetails['cin'] }}</span></h6>
+                                                                <h6><span class="text-muted fw-normal">Téléphone:</span><span>{{ $userDetails['telephone'] }}</span></h6>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div><!--end col-->
+                                            </div><!--end row-->
+
+                                            <div class="col-lg-12">
+                                                <div class="card-body p-4">
+                                                    <!-- Formation Details -->
+                                                    <div class="row g-3">
+                                                        <div class="col-lg-6 col-12">
+                                                            <h6 class="text-muted text-uppercase fw-semibold mb-3">Formation Details</h6>
+                                                            <p><strong>Description:</strong> {{ $formation->description }}</p>
+                                                            <p><strong>Mode:</strong> {{ $formation->mode === 'a_distance' ? 'À distance' : 'Présentiel' }}</p>
+                                                            <p><strong>Durée:</strong> {{ $formation->duree }}</p>
+                                                            <p><strong>Capacité:</strong> {{ $formation->capacite }}</p>
+                                                            <p><strong>Formateur:</strong> {{ $formation->formateur_name }} ({{ $formation->formateur_email }})</p>
+                                                            <p><strong>Sessions:</strong> {{ $formation->sessions }}</p>
+                                                            <p><strong>Link:</strong> <a href="{{ $formation->link }}" target="_blank">{{ $formation->link }}</a></p>
+                                                        </div>
+                                                        <!-- QR Code -->
+                                                        <div class="col-lg-6 col-12">
+                                                            <h6 class="text-muted text-uppercase fw-semibold mb-3">QR Code de l'attestation</h6>
+                                                            <div class="text-center">
+                                                                <img src="{{ $qrCodeImage }}" alt="QR Code" class="img-fluid mb-3" style="max-width: 300px;">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div><!--end col-->
+
+                                            <div class="col-lg-12">
+                                                <div class="card-body p-4">
+                                                    <!-- Download and Print Buttons -->
+                                                    <div class="hstack gap-2 justify-content-end d-print-none mt-4">
+                                                        <a href="{{ route('formation.downloadPDF', $formation->id) }}" class="btn btn-primary">
+                                                            <i class="ri-download-2-line align-bottom me-1"></i> Télécharger l'attestation en PDF
+                                                        </a>
+                                                    </div>
+                                                </div>
+                                            </div><!--end col-->
+                                        </div>
+                                    </div>
+                                </div>
+                            </div><!--end card-body-->
+                        </div><!--end card-->
+                    </div><!--end tab-pane-->
                 @endif
 
             </div><!-- end tab-content -->
