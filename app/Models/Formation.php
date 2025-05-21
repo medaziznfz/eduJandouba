@@ -16,7 +16,7 @@ class Formation extends Model
         'titre', 'thumbnail', 'description', 'summary',
         'duree', 'lieu', 'capacite', 'sessions', 'deadline',
         'etablissement_id', 'status', 'nbre_demandeur', 'nbre_inscrit',
-        'mode', 'start_at', 'link', 'formateur_name', 'formateur_email', // added
+        'mode', 'start_at', 'link', 'formateur_id',// added
     ];
 
     /**
@@ -84,6 +84,11 @@ class Formation extends Model
     public function applicationRequests()
     {
         return $this->hasMany(ApplicationRequest::class);
+    }
+
+    public function formateur()
+    {
+        return $this->belongsTo(User::class, 'formateur_id');
     }
 
     

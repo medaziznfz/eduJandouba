@@ -62,14 +62,14 @@
                     <ul class="list-inline hstack gap-2 mb-0">
                       {{-- Edit --}}
                       <li class="list-inline-item" data-bs-toggle="tooltip" title="Éditer">
-                        <a href="{{ route('etab.users.edit', $user->id) }}" class="text-primary">
+                        <a href="{{ route('univ.users.edit', $user->id) }}" class="text-primary">
                           <i class="ri-pencil-fill fs-16"></i>
                         </a>
                       </li>
 
                       {{-- Delete --}}
                       <li class="list-inline-item" data-bs-toggle="tooltip" title="Supprimer">
-                        <form action="{{ route('etab.users.destroy', $user->id) }}" method="POST" class="d-inline-block form-action" data-action="delete">
+                        <form action="{{ route('univ.users.destroy', $user->id) }}" method="POST" class="d-inline-block form-action" data-action="delete">
                           @csrf @method('DELETE')
                           <button type="submit" class="btn p-0 m-0 text-danger">
                             <i class="ri-delete-bin-5-fill fs-16"></i>

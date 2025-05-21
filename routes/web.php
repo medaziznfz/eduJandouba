@@ -286,8 +286,8 @@ Route::middleware(['auth', 'role:etab'])->group(function () {
 
 
 
-// 🔹 Dashboard super-utilisateur (« super »)
-Route::middleware(['auth','role:super'])->group(function () {
-    Route::get('/super/dashboard', fn() => view('super.dashboard'))
-         ->name('super.dashboard');
+// 🔹 Dashboard formateur (« forma »)
+Route::middleware(['auth','role:forma'])->group(function () {
+    Route::get('/forma/dashboard', fn() => view('forma.dashboard'))
+         ->name('forma.dashboard');
 });

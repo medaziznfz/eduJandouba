@@ -20,13 +20,12 @@ return new class extends Migration
             $table->string('telephone')->unique()->nullable();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
-            $table->enum('role', ['user', 'etab', 'univ', 'super'])->default('user');
+            // Changed 'super' to 'forma' here:
+            $table->enum('role', ['user', 'etab', 'univ', 'forma'])->default('user');
             $table->foreignId('etablissement_id')->nullable()->constrained()->nullOnDelete();
             $table->rememberToken();
             $table->timestamps();
         });
-        
-        
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {
             $table->string('email')->primary();
