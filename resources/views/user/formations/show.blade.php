@@ -4,14 +4,16 @@
 @section('content')
 @php
     use Carbon\Carbon;
-    // today at 00:00
-    $today = Carbon::today();
-    // has the deadline *date* already passed?
-    $pastDeadline = $formation->deadline->lt($today);
-    // disable inscription if past deadline AND user hasn't already requested
-    $disableInscrire = $pastDeadline && ! $alreadyRequested;
-@endphp
 
+    // Today at midnight
+    $today          = Carbon::today();
+    // Has the deadline date passed?
+    $pastDeadline   = $formation->deadline->lt($today);
+    // Is the status anything other than "available"?
+    $notAvailable   = $formation->status !== 'available';
+    // Disable inscription if (past deadline OR not available) AND user hasn't already requested
+    $disableInscrire = ($pastDeadline || $notAvailable) && ! $alreadyRequested;
+@endphp
 
 <div class="container-fluid py-4">
     {{-- Boutons S’inscrire / Retour --}}
@@ -20,7 +22,7 @@
             <button
                 id="inscrire-action-btn"
                 class="btn btn-sm btn-success me-2"
-                {{ in_array($formation->status, ['completed','canceled']) || $disableInscrire ? 'disabled' : '' }}>
+                {{ $disableInscrire ? 'disabled' : '' }}>
                 <i class="ri-pencil-fill align-bottom"></i> S’inscrire
             </button>
             <a href="{{ route('user.formations.index') }}" class="btn btn-sm btn-secondary">
@@ -73,9 +75,9 @@
                                             <div>
                                                 Date de début :
                                                 <span class="fw-medium">
-                                                  {{ $formation->start_at
-                                                      ? $formation->start_at->format('d M, Y')
-                                                      : 'Non défini' }}
+                                                    {{ $formation->start_at
+                                                        ? $formation->start_at->format('d M, Y')
+                                                        : 'Non défini' }}
                                                 </span>
                                             </div>
                                             <div class="vr"></div>
@@ -107,7 +109,7 @@
                             </div>
                         </div>
 
-                        {{-- Tabs --}}
+                        {{-- Onglets --}}
                         <ul class="nav nav-tabs-custom border-bottom-0 px-4" role="tablist">
                             <li class="nav-item">
                                 <a class="nav-link active fw-semibold"
@@ -118,16 +120,15 @@
                                 </a>
                             </li>
                             <li class="nav-item">
-                                <a
-                                    id="inscrire-tab-btn"
-                                    class="nav-link fw-semibold {{ $disableInscrire || !in_array($formation->status, ['available','in_progress']) ? 'disabled text-muted' : '' }}"
-                                    href="#tab-inscrire"
-                                    role="tab"
-                                    @if(!in_array($formation->status, ['available','in_progress']) || $disableInscrire)
-                                        aria-disabled="true" tabindex="-1"
-                                    @else
-                                        data-bs-toggle="tab"
-                                    @endif>
+                                <a id="inscrire-tab-btn"
+                                   class="nav-link fw-semibold {{ $disableInscrire ? 'disabled text-muted' : '' }}"
+                                   href="#tab-inscrire"
+                                   role="tab"
+                                   @if($disableInscrire)
+                                     aria-disabled="true" tabindex="-1"
+                                   @else
+                                     data-bs-toggle="tab"
+                                   @endif>
                                     S’inscrire
                                 </a>
                             </li>
@@ -164,6 +165,7 @@
                                     {!! $formation->summary !!}
                                 </div>
                             </div>
+
                             {{-- Informations --}}
                             <div class="card">
                                 <div class="card-body">
@@ -204,9 +206,9 @@
                                         {{-- Formateur --}}
                                         <dt class="col-sm-3 text-muted">Formateur</dt>
                                         <dd class="col-sm-9">
-                                            {{ $formation->formateur->prenom }}
-                                            {{ $formation->formateur->nom }}
-                                            ({{ $formation->formateur->email }})
+                                            {{ optional($formation->formateur)->prenom }}
+                                            {{ optional($formation->formateur)->nom }}
+                                            ({{ optional($formation->formateur)->email }})
                                         </dd>
                                     </dl>
                                 </div>
@@ -245,14 +247,13 @@
                             </div>
                         </div>
                     </div>
-                </div>
-                {{-- end tab-details --}}
+                </div><!-- end tab-details -->
 
                 {{-- Onglet S’inscrire --}}
                 <div class="tab-pane fade" id="tab-inscrire" role="tabpanel">
                     <div class="card text-center">
                         <div class="card-body py-5">
-                            @if($formation->status !== 'available' && $formation->status !== 'in_progress' || $disableInscrire)
+                            @if($disableInscrire)
                                 <i class="ri-lock-line fs-48 text-secondary mb-3"></i>
                                 <h5 class="mb-1">Inscriptions fermées</h5>
                                 <p class="text-muted">Vous ne pouvez plus vous inscrire à cette formation.</p>
@@ -269,7 +270,7 @@
                                     </button>
                                     <div>
                                         <small>
-                                            Status actuel :
+                                            Statut actuel :
                                             <span class="badge bg-info fs-6 px-3 py-1">
                                                 {{ $statusLabels[$requestStatus] }}
                                             </span>
@@ -277,12 +278,19 @@
                                     </div>
 
                                     @if($requestStatus == 1)
-                                        <form method="POST" action="{{ route('user.formations.confirm_or_reject', $formation) }}">
+                                        <form method="POST"
+                                              action="{{ route('user.formations.confirm_or_reject', $formation) }}">
                                             @csrf
-                                            <button type="submit" name="action" value="confirm" class="btn btn-success btn-sm mb-3">
+                                            <button type="submit"
+                                                    name="action"
+                                                    value="confirm"
+                                                    class="btn btn-success btn-sm mb-3">
                                                 Confirmer
                                             </button>
-                                            <button type="submit" name="action" value="reject" class="btn btn-danger btn-sm mb-3">
+                                            <button type="submit"
+                                                    name="action"
+                                                    value="reject"
+                                                    class="btn btn-danger btn-sm mb-3">
                                                 Refuser
                                             </button>
                                         </form>
@@ -294,7 +302,8 @@
                                         <p class="text-danger">Votre demande a été rejetée.</p>
                                     @endif
                                 @else
-                                    <form id="inscription-form" method="POST"
+                                    <form id="inscription-form"
+                                          method="POST"
                                           action="{{ route('user.formations.request', $formation) }}">
                                         @csrf
                                         <button id="inscription-btn"
@@ -306,46 +315,66 @@
                             @endif
                         </div>
                     </div>
-                </div>
-                {{-- Attestation tab... --}}
-            </div>
+                </div><!-- end tab-inscrire -->
+
+                {{-- Onglet Attestation --}}
+                @if(in_array($formation->status, ['available','in_progress']) && $requestStatus === 4)
+                    <div class="tab-pane fade" id="tab-attestation" role="tabpanel">
+                        {{-- ... votre code pour l’attestation ... --}}
+                    </div>
+                @endif
+
+            </div><!-- end tab-content -->
         </div>
-    </div>
+    </div><!-- end row -->
 </div>
+
 @endsection
 
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
-        if (window.feather) feather.replace();
+document.addEventListener('DOMContentLoaded', function() {
+    if (window.feather) feather.replace();
 
-        // Top “S’inscrire” button → onglet inscription
-        document.getElementById('inscrire-action-btn')?.addEventListener('click', () => {
-            document.getElementById('inscrire-tab-btn')?.click();
-        });
-
-        // Confirmation SweetAlert avant submit
-        const form = document.getElementById('inscription-form');
-        form?.addEventListener('submit', e => {
-            e.preventDefault();
-            Swal.fire({
-                title: 'Confirmer votre demande',
-                text: "Voulez-vous vraiment vous inscrire ?",
-                icon: 'question',
-                showCancelButton: true,
-                confirmButtonText: 'Oui, confirmer',
-                cancelButtonText: 'Annuler'
-            }).then(result => {
-                if (result.isConfirmed) form.submit();
-            });
-        });
-
-        // Preserve tab on flash
-        const params = new URLSearchParams(window.location.search);
-        if (params.get('tab') === 'inscrire') {
-            document.getElementById('inscrire-tab-btn')?.click();
-        }
+    // Top “S’inscrire” button → onglet inscription
+    document.getElementById('inscrire-action-btn')?.addEventListener('click', () => {
+        document.getElementById('inscrire-tab-btn')?.click();
     });
+
+    // Confirmation SweetAlert avant submit
+    const form = document.getElementById('inscription-form');
+    form?.addEventListener('submit', e => {
+        e.preventDefault();
+        Swal.fire({
+            title: 'Confirmer votre demande',
+            text: "Voulez-vous vraiment vous inscrire ?",
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Oui, confirmer',
+            cancelButtonText: 'Annuler'
+        }).then(result => {
+            if (result.isConfirmed) form.submit();
+        });
+    });
+
+    // Preserve tab on flash
+    const params = new URLSearchParams(window.location.search);
+    if (params.get('tab') === 'inscrire') {
+        document.getElementById('inscrire-tab-btn')?.click();
+    }
+
+    // Flash messages keep tab
+    @if(session('success'))
+        Swal.fire({ icon:'success', title:'Succès', text:"{{ session('success') }}", didClose() {
+            document.getElementById('inscrire-tab-btn')?.click();
+        }});
+    @endif
+    @if(session('error'))
+        Swal.fire({ icon:'error', title:'Erreur', text:"{{ session('error') }}", didClose() {
+            document.getElementById('inscrire-tab-btn')?.click();
+        }});
+    @endif
+});
 </script>
 @endpush
