@@ -12,6 +12,7 @@ use App\Http\Controllers\ApplicationController;
 use App\Http\Controllers\UniversityApplicationController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MyFormationController;
+use App\Http\Controllers\UnivDashController;
 
 
 
@@ -270,16 +271,17 @@ Route::middleware(['auth','role:univ'])->prefix('univ/settings')->group(function
 
 
 
-Route::middleware(['auth','role:univ'])
-     ->prefix('univ')
-     ->name('univ.')
-     ->group(function () {
-    // Dashboard home
-    Route::view('dashboard','univ.dashboard')->name('dashboard');
+Route::middleware(['auth', 'role:univ'])
+    ->prefix('univ')
+    ->name('univ.')
+    ->group(function () {
 
-    // Full CRUD for Formations
-    Route::resource('formations', FormationController::class);
-});
+        // Dashboard home - via controller et méthode index
+        Route::get('dashboard', [UnivDashController::class, 'index'])->name('dashboard');
+
+        // Full CRUD for Formations
+        Route::resource('formations', FormationController::class);
+    });
 
 
 use App\Http\Controllers\UserManagementController;

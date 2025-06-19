@@ -26,29 +26,36 @@ class UnivDashController extends Controller
             ->count();
 
         // Formations count per grade (using the pivot table)
-        $formationsPerGrade = DB::table('formation_grade')
-            ->select(
+        $formationsPerGrade = Grade::select(
                 'grades.id as grade_id',
                 'grades.nom as grade_name',
-                DB::raw('count(*) as total')
+                DB::raw('COUNT(formation_grade.formation_id) as total')
             )
-            ->join('grades', 'formation_grade.grade_id', '=', 'grades.id')
+            ->leftJoin('formation_grade', 'grades.id', '=', 'formation_grade.grade_id')
             ->groupBy('grades.id', 'grades.nom')
             ->get();
 
-        // Users by establishment
-        $usersPerEtab = User::select('etablissement_id', DB::raw('count(*) as total'))
-            ->groupBy('etablissement_id')
-            ->with('etablissement')
+        // Users by establishment (ignore users with null etablissement_id)
+        $usersPerEtab = Etablissement::select(
+        'etablissements.id',
+        'etablissements.nom as etablissement_name',
+        DB::raw('COUNT(users.id) as total')
+            )
+            ->leftJoin('users', function($join) {
+                $join->on('etablissements.id', '=', 'users.etablissement_id')
+                    ->whereNotNull('users.etablissement_id'); // filtrer ici
+            })
+            ->groupBy('etablissements.id', 'etablissements.nom')
             ->get();
 
-        // Get pending applications with their relationships
+
+        // Get pending applications with relationships
         $pendingApplications = ApplicationRequest::with([
                 'formation', 
                 'user', 
                 'formation.etablissement',
                 'user.grade',
-                'formation.grades' // Load the grades through the pivot table
+                'formation.grades'
             ])
             ->where('etab_confirmed', true)
             ->where('status', 0)

@@ -44,7 +44,7 @@
                                     <img src="{{ asset('assets/images/logo-light.png') }}" alt="logo" height="50">
                                 </a>
                             </div>
-                            <p class="mt-3 fs-15 fw-medium">Connexion à l’espace Jandouba</p>
+                            <p class="mt-3 fs-15 fw-medium">Connexion à l’espace Jendouba</p>
                         </div>
                     </div>
                 </div>
@@ -115,7 +115,7 @@
                 <div class="row">
                     <div class="col-lg-12 text-center">
                         <p class="mb-0 text-muted">&copy;
-                            <script>document.write(new Date().getFullYear())</script> JANDOUBA. Tous droits réservés.
+                            <script>document.write(new Date().getFullYear())</script> Jendouba. Tous droits réservés.
                         </p>
                     </div>
                 </div>

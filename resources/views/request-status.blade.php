@@ -3,9 +3,9 @@
 
 <head>
     <meta charset="utf-8" />
-    <title>Vérification du statut | JANDOUBA</title>
+    <title>Vérification du statut | Jendouba</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="Statut de la demande JANDOUBA" name="description" />
+    <meta content="Statut de la demande Jendouba" name="description" />
     <meta content="fedi" name="author" />
     <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">
 
@@ -40,7 +40,7 @@
                                     <img src="{{ asset('assets/images/logo-light.png') }}" alt="" height="50">
                                 </a>
                             </div>
-                            <p class="mt-3 fs-15 fw-medium">Vérification du statut de demande JANDOUBA</p>
+                            <p class="mt-3 fs-15 fw-medium">Vérification du statut de demande Jendouba</p>
                         </div>
                     </div>
                 </div>
@@ -101,7 +101,7 @@
                     <div class="col-lg-12">
                         <div class="text-center">
                             <p class="mb-0 text-muted">&copy;
-                                <script>document.write(new Date().getFullYear())</script> JANDOUBA. Tous droits réservés.
+                                <script>document.write(new Date().getFullYear())</script> Jendouba. Tous droits réservés.
                             </p>
                         </div>
                     </div>

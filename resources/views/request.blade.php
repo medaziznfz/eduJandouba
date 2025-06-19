@@ -5,7 +5,7 @@
     <meta charset="utf-8" />
     <title>Demande d'inscription</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta content="Formulaire de demande JANDOUBA" name="description" />
+    <meta content="Formulaire de demande Jendouba" name="description" />
     <meta content="fedi" name="author" />
     <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">
 
@@ -37,7 +37,7 @@
                                     <img src="{{ asset('assets/images/logo-light.png') }}" alt="" height="50">
                                 </a>
                             </div>
-                            <p class="mt-3 fs-15 fw-medium">Formulaire de demande JANDOUBA</p>
+                            <p class="mt-3 fs-15 fw-medium">Formulaire de demande Jendouba</p>
                         </div>
                     </div>
                 </div>
@@ -141,7 +141,7 @@
                 <div class="row">
                     <div class="col-lg-12">
                         <div class="text-center">
-                            <p class="mb-0 text-muted">&copy; <script>document.write(new Date().getFullYear())</script> JANDOUBA. Tous droits réservés.</p>
+                            <p class="mb-0 text-muted">&copy; <script>document.write(new Date().getFullYear())</script> Jendouba. Tous droits réservés.</p>
                         </div>
                     </div>
                 </div>

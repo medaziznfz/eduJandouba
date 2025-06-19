@@ -8,4 +8,4 @@
     </a>
 </p>
 
-<p>Merci,<br>L’équipe JANDOUBA University</p>
+<p>Merci,<br>L’équipe Jendouba University</p>
