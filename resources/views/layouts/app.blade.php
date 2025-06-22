@@ -264,13 +264,7 @@
           <a class="dropdown-item" href="{{ route('profile.index') }}">
             <i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> Profil
           </a>
-          <a class="dropdown-item" href="apps-chat.html">
-            <i class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> Messages
-          </a>
           <div class="dropdown-divider"></div>
-          <a class="dropdown-item" href="pages-profile-settings.html">
-            <i class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i> Paramètres
-          </a>
           <a class="dropdown-item" href="{{ route('logout') }}">
             <i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> Se déconnecter
           </a>
@@ -363,11 +357,6 @@
                 </a>
               </li>
             @elseif(auth()->user()->role === 'forma')
-              <li class="nav-item">
-                <a class="nav-link menu-link" href="#">
-                  <i class="ri-shield-user-line"></i> Supervision
-                </a>
-              </li>
               <li class="nav-item">
                 <a href="{{ route('forma.formations.index') }}" class="nav-link">
                   <i class="ri-book-open-line"></i> Mes Formations
