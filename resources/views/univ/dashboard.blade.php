@@ -1,17 +1,36 @@
 @extends('layouts.app')
 
+@push('styles')
+
+<style>
+    .widget-box {
+  border: 1px solid #ddd;       /* Bordure grise claire */
+  border-radius: 8px;           /* Bords arrondis (optionnel) */
+  transition: box-shadow 0.3s ease, border-color 0.3s ease;
+}
+
+.widget-box:hover {
+  border-color: #4CAF50;        /* Couleur de bordure au hover (vert) */
+  box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3); /* Ombre portée verte */
+  cursor: pointer;              /* Curseur pointeur au survol */
+}
+</style>
+
+@endpush
+
+
 @section('content')
 
 <!-- start page title -->
 <div class="row">
     <div class="col-12">
         <div class="page-title-box d-sm-flex align-items-center justify-content-between bg-galaxy-transparent">
-            <h4 class="mb-sm-0">CRM</h4>
+            <h4 class="mb-sm-0">Statistique</h4>
 
             <div class="page-title-right">
                 <ol class="breadcrumb m-0">
-                    <li class="breadcrumb-item"><a href="javascript: void(0);">Dashboards</a></li>
-                    <li class="breadcrumb-item active">CRM</li>
+                    <li class="breadcrumb-item"><a href="javascript: void(0);">Dashboard</a></li>
+                    <li class="breadcrumb-item active">Univeresitaire</li>
                 </ol>
             </div>
 
@@ -20,14 +39,64 @@
 </div>
 <!-- end page title -->
 
-<div class="row">
-    <div class="col-xl-12">
+<div class="row align-items-center">
+    <!-- Left column (statistics) -->
+    
+
+    <!-- Right column (Users by Device) -->
+    <div class="col-xl-4">
+        <div class="card card-height-100">
+            <div class="card-header align-items-center d-flex">
+                <h4 class="card-title mb-0 flex-grow-1">Utilisateur par role</h4>
+                
+            </div><!-- end card header -->
+            <div class="card-body">
+                <div id="user_role_pie_chart" data-colors='["--vz-primary", "--vz-warning", "--vz-info", "--vz-success"]' class="apex-charts" dir="ltr"></div>
+
+<div class="table-responsive mt-3">
+    <table class="table table-borderless table-sm table-centered align-middle table-nowrap mb-0">
+        <tbody class="border-0">
+            <tr>
+                <td>
+                    <h4 class="fs-14 fs-medium mb-0"><i class="ri-stop-fill text-primary me-2 fs-18"></i>Utilisateurs</h4>
+                </td>
+                <td>{{ $userRolesStats['user']->total ?? 0 }}</td>
+            </tr>
+            <tr>
+                <td>
+                    <h4 class="fs-14 fs-medium mb-0"><i class="ri-stop-fill text-success me-2 fs-18"></i>Établissements</h4>
+                </td>
+                <td>{{ $userRolesStats['etab']->total ?? 0 }}</td>
+            </tr>
+            <tr>
+                <td>
+                    <h4 class="fs-14 fs-medium mb-0"><i class="ri-stop-fill text-warning me-2 fs-18"></i>Formateurs</h4>
+                </td>
+                <td>{{ $userRolesStats['forma']->total ?? 0 }}</td>
+            </tr>
+            <tr>
+                <td>
+                    <h4 class="fs-14 fs-medium mb-0"><i class="ri-stop-fill text-info me-2 fs-18"></i>Université</h4>
+                </td>
+                <td>{{ $userRolesStats['univ']->total ?? 0 }}</td>
+            </tr>
+        </tbody>
+    </table>
+</div>
+
+            </div><!-- end card body -->
+        </div><!-- end card -->
+    </div><!-- end right col -->
+    <div class="col-xl-8">
         <div class="card crm-widget">
-            <div class="card-body p-0">
-                <div class="row row-cols-xxl-5 row-cols-md-3 row-cols-1 g-0">
-                    <div class="col">
-                        <div class="py-4 px-3">
-                            <h5 class="text-muted text-uppercase fs-13">Tout les Utilisateurs<i class="ri-arrow-up-circle-line text-success fs-18 float-end align-middle"></i></h5>
+            <div class="card-body p-3">
+                <div class="row g-3">
+                    <!-- 6 widgets: all using col-md-6 -->
+                    <div class="col-md-6">
+                        <div class="py-4 px-3 widget-box">
+                            <h5 class="text-muted text-uppercase fs-13">Tout les Utilisateurs
+                                <i class="ri-check-double-line text-success fs-18 float-end align-middle"></i>
+                            </h5>
                             <div class="d-flex align-items-center">
                                 <div class="flex-shrink-0">
                                     <i class="ri-shield-user-line display-6 text-muted cfs-22"></i>
@@ -37,10 +106,13 @@
                                 </div>
                             </div>
                         </div>
-                    </div><!-- end col -->
-                    <div class="col">
-                        <div class="mt-3 mt-md-0 py-4 px-3">
-                            <h5 class="text-muted text-uppercase fs-13">Tout les formations<i class="ri-arrow-up-circle-line text-success fs-18 float-end align-middle"></i></h5>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="py-4 px-3 widget-box">
+                            <h5 class="text-muted text-uppercase fs-13">Tout les formations
+                                <i class="ri-check-double-line text-success fs-18 float-end align-middle"></i>
+                            </h5>
                             <div class="d-flex align-items-center">
                                 <div class="flex-shrink-0">
                                     <i class="ri-profile-line display-6 text-muted cfs-22"></i>
@@ -50,10 +122,13 @@
                                 </div>
                             </div>
                         </div>
-                    </div><!-- end col -->
-                    <div class="col">
-                        <div class="mt-3 mt-md-0 py-4 px-3">
-                            <h5 class="text-muted text-uppercase fs-13">Demandes participations<i class="ri-arrow-down-circle-line text-danger fs-18 float-end align-middle"></i></h5>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="py-4 px-3 widget-box">
+                            <h5 class="text-muted text-uppercase fs-13">Demandes participations
+                                <i class="ri-check-double-line text-success fs-18 float-end align-middle"></i>
+                            </h5>
                             <div class="d-flex align-items-center">
                                 <div class="flex-shrink-0">
                                     <i class="ri-pulse-line display-6 text-muted cfs-22"></i>
@@ -63,10 +138,13 @@
                                 </div>
                             </div>
                         </div>
-                    </div><!-- end col -->
-                    <div class="col">
-                        <div class="mt-3 mt-lg-0 py-4 px-3">
-                            <h5 class="text-muted text-uppercase fs-13">Etablissement<i class="ri-arrow-up-circle-line text-success fs-18 float-end align-middle"></i></h5>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="py-4 px-3 widget-box">
+                            <h5 class="text-muted text-uppercase fs-13">Etablissement
+                                <i class="ri-check-double-line text-success fs-18 float-end align-middle"></i>
+                            </h5>
                             <div class="d-flex align-items-center">
                                 <div class="flex-shrink-0">
                                     <i class="ri-trophy-line display-6 text-muted cfs-22"></i>
@@ -76,10 +154,13 @@
                                 </div>
                             </div>
                         </div>
-                    </div><!-- end col -->
-                    <div class="col">
-                        <div class="mt-3 mt-lg-0 py-4 px-3">
-                            <h5 class="text-muted text-uppercase fs-13">Grades<i class="ri-arrow-down-circle-line text-danger fs-18 float-end align-middle"></i></h5>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="py-4 px-3 widget-box">
+                            <h5 class="text-muted text-uppercase fs-13">Grades
+                                <i class="ri-check-double-line text-success fs-18 float-end align-middle"></i>
+                            </h5>
                             <div class="d-flex align-items-center">
                                 <div class="flex-shrink-0">
                                     <i class="ri-service-line display-6 text-muted cfs-22"></i>
@@ -89,12 +170,33 @@
                                 </div>
                             </div>
                         </div>
-                    </div><!-- end col -->
+                    </div>
+
+                    <!-- ✅ New 6th Widget -->
+                    <div class="col-md-6">
+                        <div class="py-4 px-3 widget-box">
+                            <h5 class="text-muted text-uppercase fs-13">Validateur Etablissement
+                                <i class="ri-check-double-line text-success fs-18 float-end align-middle"></i>
+                            </h5>
+                            <div class="d-flex align-items-center">
+                                <div class="flex-shrink-0">
+                                    <i class="ri-user-follow-line display-6 text-muted cfs-22"></i>
+                                </div>
+                                <div class="flex-grow-1 ms-3">
+                                    <h2 class="mb-0 cfs-22"><span class="counter-value" data-target="{{ $userRolesStats['etab']->total?? 0 }}">0</span></h2>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- end new widget -->
+
                 </div><!-- end row -->
-            </div><!-- end card body -->
+            </div><!-- end card-body -->
         </div><!-- end card -->
-    </div><!-- end col -->
+    </div><!-- end left col -->
 </div><!-- end row -->
+
+
 
 <div class="row">
     <div class="col-xxl-3 col-md-6">
@@ -121,29 +223,32 @@
     </div><!-- end col -->
 
     <div class="col-xxl-6">
-        <div class="card card-height-100">
-            <div class="card-header align-items-center d-flex">
-                <h4 class="card-title mb-0 flex-grow-1">Tout les formations</h4>
-                
-            </div><!-- end card header -->
-            <div class="card-body px-0">
-                <ul class="list-inline main-chart text-center mb-0">
-                    <li class="list-inline-item chart-border-left me-0 border-0">
-                        <h4 class="text-primary">$584k <span class="text-muted d-inline-block fs-13 align-middle ms-2">Revenue</span></h4>
-                    </li>
-                    <li class="list-inline-item chart-border-left me-0">
-                        <h4>$497k<span class="text-muted d-inline-block fs-13 align-middle ms-2">Expenses</span>
-                        </h4>
-                    </li>
-                    <li class="list-inline-item chart-border-left me-0">
-                        <h4><span data-plugin="counterup">3.6</span>%<span class="text-muted d-inline-block fs-13 align-middle ms-2">Profit Ratio</span></h4>
-                    </li>
-                </ul>
-
-                <div id="revenue-expenses-charts" data-colors='["--vz-success", "--vz-danger"]' data-colors-minimal='["--vz-primary", "--vz-info"]' data-colors-interactive='["--vz-info", "--vz-primary"]' data-colors-galaxy='["--vz-primary", "--vz-secondary"]' data-colors-classic='["--vz-primary", "--vz-secondary"]' class="apex-charts" dir="ltr"></div>
-            </div>
-        </div><!-- end card -->
-    </div><!-- end col -->
+    <div class="card card-height-100">
+        <div class="card-header align-items-center d-flex">
+            <h4 class="card-title mb-0 flex-grow-1">Demandes vs Utilisateurs</h4>
+        </div>
+        <div class="card-body px-0">
+            <ul class="list-inline main-chart text-center mb-0">
+                <li class="list-inline-item chart-border-left me-0 border-0">
+                    <h4 class="text-primary">{{ $demandesCount }} <span class="text-muted d-inline-block fs-13 align-middle ms-2">Demandes</span></h4>
+                </li>
+                <li class="list-inline-item chart-border-left me-0">
+                    <h4>{{ $userCount }}<span class="text-muted d-inline-block fs-13 align-middle ms-2">Utilisateurs</span></h4>
+                </li>
+                <li class="list-inline-item chart-border-left me-0">
+                    <h4><span data-plugin="counterup">{{ $userCount > 0 ? round(($userCount/$demandesCount)*100, 1) : 0 }}</span>%<span class="text-muted d-inline-block fs-13 align-middle ms-2">Ratio</span></h4>
+                </li>
+            </ul>
+            <div id="revenue-expenses-charts" 
+                 data-colors='["--vz-success", "--vz-danger"]'
+                 data-colors-minimal='["--vz-primary", "--vz-info"]'
+                 data-colors-interactive='["--vz-info", "--vz-primary"]'
+                 data-colors-galaxy='["--vz-primary", "--vz-secondary"]'
+                 data-colors-classic='["--vz-primary", "--vz-secondary"]'
+                 class="apex-charts" dir="ltr"></div>
+        </div>
+    </div>
+</div>
 </div><!-- end row -->
 
                     
@@ -169,6 +274,8 @@
 var salesForecastChart = "",
     dealTypeCharts = "",
     revenueExpensesCharts = "";
+var salesForecastChart, dealTypeCharts, revenueExpensesCharts, userDevicePieCharts, userRolePieChart;
+
 function loadCharts() {
     console.group("Formations per Grade Data");
     console.log("Grade Names:", @json($formationsPerGrade->pluck('grade_name')));
@@ -211,13 +318,10 @@ function loadCharts() {
                     show: !0,
                     borderType: "solid",
                     color: "#78909C",
-                    height: 6,
-                    offsetX: 0,
-                    offsetY: 0
+                    height: 6
                 },
                 title: {
                     text: "Grades",
-                    offsetX: 0,
                     offsetY: -30,
                     style: {
                         color: "#78909C",
@@ -234,10 +338,10 @@ function loadCharts() {
             yaxis: {
                 labels: {
                     formatter: function(e) {
-                        return e  // Keep currency formatting
+                        return e
                     }
                 },
-                tickAmount: 1, // Changed to 1 tick
+                tickAmount: 1,
                 min: 0
             },
             fill: {
@@ -246,22 +350,11 @@ function loadCharts() {
             legend: {
                 show: !0,
                 position: "bottom",
-                horizontalAlign: "center",
                 fontWeight: 500,
-                offsetX: 0,
-                offsetY: -14,
-                itemMargin: {
-                    horizontal: 8,
-                    vertical: 0
-                },
-                markers: {
-                    width: 10,
-                    height: 10
-                }
+                offsetY: -14
             },
             colors: t
         };
-
         if (salesForecastChart) salesForecastChart.destroy();
         salesForecastChart = new ApexCharts(document.querySelector("#sales-forecast-chart"), e);
         salesForecastChart.render();
@@ -299,17 +392,7 @@ function loadCharts() {
             legend: {
                 show: !0,
                 fontWeight: 500,
-                offsetX: 0,
-                offsetY: -8,
-                markers: {
-                    width: 8,
-                    height: 8,
-                    radius: 6
-                },
-                itemMargin: {
-                    horizontal: 10,
-                    vertical: 0
-                }
+                offsetY: -8
             },
             markers: {
                 size: 0
@@ -329,7 +412,6 @@ function loadCharts() {
                 }
             }
         };
-
         if (dealTypeCharts) dealTypeCharts.destroy();
         dealTypeCharts = new ApexCharts(document.querySelector("#deal-type-charts"), e);
         dealTypeCharts.render();
@@ -340,8 +422,14 @@ function loadCharts() {
     if (t) {
         e = {
             series: [
-                { name: "Revenue", data: [20, 25, 30, 35, 40, 55, 70, 110, 150, 180, 210, 250] },
-                { name: "Expenses", data: [12, 17, 45, 42, 24, 35, 42, 75, 102, 108, 156, 199] }
+                {
+                    name: "Demandes",
+                    data: @json($monthlyStats->pluck('demandes_count'))
+                },
+                {
+                    name: "Utilisateurs (Role: User)",
+                    data: @json($monthlyStats->pluck('users_count'))
+                }
             ],
             chart: {
                 height: 290,
@@ -349,7 +437,7 @@ function loadCharts() {
                 toolbar: false
             },
             dataLabels: {
-                enabled: !1
+                enabled: false
             },
             stroke: {
                 curve: "smooth",
@@ -360,27 +448,78 @@ function loadCharts() {
             },
             yaxis: {
                 labels: {
-                    formatter: function(e) {
-                        return "$" + e + "k";
+                    formatter: function (e) {
+                        return Math.round(e);
                     }
                 },
-                tickAmount: 5,
+                tickAmount: 1,
                 min: 0,
-                max: 260
+                forceNiceScale: true
             },
-            colors: t,
+            colors: ["#FF4560", "#00E396"],
             fill: {
-                opacity: .06,
-                colors: t,
+                opacity: 0.06,
+                colors: ["#FF4560", "#00E396"],
                 type: "solid"
+            },
+            tooltip: {
+                y: {
+                    formatter: function (value) {
+                        return value;
+                    }
+                }
+            },
+            markers: {
+                size: 4,
+                colors: ["#FF4560", "#00E396"]
             }
         };
-
         if (revenueExpensesCharts) revenueExpensesCharts.destroy();
         revenueExpensesCharts = new ApexCharts(document.querySelector("#revenue-expenses-charts"), e);
         revenueExpensesCharts.render();
     }
+
+    // Fourth Chart - Users by Device (Donut Chart)
+    t = getChartColorsArray("user_role_pie_chart");
+if (t) {
+    e = {
+        series: [
+            {{ $userRolesStats['user']->total ?? 0 }},
+            {{ $userRolesStats['etab']->total ?? 0 }},
+            {{ $userRolesStats['forma']->total ?? 0 }},
+            {{ $userRolesStats['univ']->total ?? 0 }}
+        ],
+        labels: ["Utilisateur", "Etablissement", "Formateur", "Universitaire"],
+        chart: {
+            type: "donut",
+            height: 219
+        },
+        plotOptions: {
+            pie: {
+                size: 100,
+                donut: {
+                    size: "76%"
+                }
+            }
+        },
+        dataLabels: {
+            enabled: false
+        },
+        legend: {
+            show: false
+        },
+        stroke: {
+            width: 0
+        },
+        colors: t
+    };
+    if (userRolePieChart) userRolePieChart.destroy();
+    userRolePieChart = new ApexCharts(document.querySelector("#user_role_pie_chart"), e);
+    userRolePieChart.render();
 }
+
+}
+
 
 window.onresize = function() {
     setTimeout(() => {
