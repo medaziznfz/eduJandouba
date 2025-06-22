@@ -219,13 +219,7 @@
                 <a class="dropdown-item" href="{{ route('profile.index') }}">
                   <i class="mdi mdi-account-circle text-muted fs-16 align-middle me-1"></i> Profil
                 </a>
-                <a class="dropdown-item" href="#">
-                  <i class="mdi mdi-message-text-outline text-muted fs-16 align-middle me-1"></i> Messages
-                </a>
                 <div class="dropdown-divider"></div>
-                <a class="dropdown-item" href="#">
-                  <i class="mdi mdi-cog-outline text-muted fs-16 align-middle me-1"></i> Paramètres
-                </a>
                 <a class="dropdown-item" href="{{ route('logout') }}">
                   <i class="mdi mdi-logout text-muted fs-16 align-middle me-1"></i> Se déconnecter
                 </a>
