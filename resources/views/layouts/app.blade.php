@@ -356,13 +356,19 @@
                   <i class="ri-settings-3-line"></i> Gestion des Grades & Établissements
                 </a>
               </li>
-            @elseif(auth()->user()->role === 'forma')
+           @elseif(auth()->user()->role === 'forma')
               <li class="nav-item">
-                <a href="{{ route('forma.formations.index') }}" class="nav-link">
-                  <i class="ri-book-open-line"></i> Mes Formations
-                </a>
+                  <a href="{{ route('forma.formations.index') }}" class="nav-link">
+                      <i class="ri-book-open-line"></i> Mes Formations
+                  </a>
               </li>
-            @endif
+              <li class="nav-item">
+                  <a href="{{ route('qrscanner.scan') }}" class="nav-link">
+                      <i class="ri-check-line"></i> Vérifier une attestation
+                  </a>
+              </li>
+          @endif
+
           </ul>
         </div>
       </div>

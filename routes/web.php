@@ -24,6 +24,12 @@ use App\Http\Controllers\UnivDashController;
 
 
 
+use App\Http\Controllers\QRScannerController;
+
+Route::get('/scan', [QRScannerController::class, 'scan'])->name('qrscanner.scan');
+Route::get('/certificate/{hash}', [QRScannerController::class, 'showCertificate'])->name('qrscanner.show');
+
+
 use App\Http\Controllers\NotificationController;
 
 // Route for viewing notifications

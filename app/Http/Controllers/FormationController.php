@@ -83,6 +83,13 @@ class FormationController extends Controller
         $formation = Formation::create($data);
         $formation->grades()->sync($data['grades']);
 
+          notify(
+                $formation->formateur_id,
+                'Nouvelle formation attribuée',
+                "Vous êtes concerné(e) par la formation : {$formation->titre}",
+                 route('forma.formations.show', $formation->id)
+            );
+
         return redirect()
             ->route('univ.formations.index')
             ->with('success', 'Formation créée.');
@@ -143,6 +150,13 @@ class FormationController extends Controller
             $formation->status = 'available';
             $formation->save();
         }
+
+        notify(
+            $formation->formateur_id,
+            'Formation mise à jour',
+            "La formation '{$formation->titre}' vous concerne toujours.",
+            route('forma.formations.show', $formation->id)
+        );
 
         return redirect()
             ->route('univ.formations.index')
