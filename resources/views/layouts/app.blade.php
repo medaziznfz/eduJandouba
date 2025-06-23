@@ -31,11 +31,11 @@
         <div class="navbar-header">
           <div class="d-flex">
             <div class="navbar-brand-box horizontal-logo">
-              <a href="index.html" class="logo logo-dark">
+              <a href="{{ route(auth()->user()->role . '.dashboard') }}" class="logo logo-dark">
                 <span class="logo-sm"><img src="{{ asset('assets/images/logo-sm.png') }}" height="50" alt="logo"></span>
                 <span class="logo-lg"><img src="{{ asset('assets/images/logo-dark.png') }}" height="40" alt="logo"></span>
               </a>
-              <a href="index.html" class="logo logo-light">
+              <a href="{{ route(auth()->user()->role . '.dashboard') }}" class="logo logo-light">
                 <span class="logo-sm"><img src="{{ asset('assets/images/logo-sm.png') }}" height="50" alt="logo"></span>
                 <span class="logo-lg"><img src="{{ asset('assets/images/logo-light.png') }}" height="40" alt="logo"></span>
               </a>
@@ -234,11 +234,11 @@
     <!-- ================= MENU LATÉRAL ================= -->
     <div class="app-menu navbar-menu">
       <div class="navbar-brand-box">
-        <a href="index.html" class="logo logo-dark">
+        <a href="{{ route(auth()->user()->role . '.dashboard') }}" class="logo logo-dark">
           <span class="logo-sm"><img src="{{ asset('assets/images/logo-sm.png') }}" height="50" alt="logo"></span>
           <span class="logo-lg"><img src="{{ asset('assets/images/logo-dark.png') }}" height="40" alt="logo"></span>
         </a>
-        <a href="index.html" class="logo logo-light">
+        <a href="{{ route(auth()->user()->role . '.dashboard') }}" class="logo logo-light">
           <span class="logo-sm"><img src="{{ asset('assets/images/logo-sm.png') }}" height="50" alt="logo"></span>
           <span class="logo-lg"><img src="{{ asset('assets/images/logo-light.png') }}" height="40" alt="logo"></span>
         </a>

@@ -6,7 +6,7 @@
     <title>Détails de l'Application | {{ $formation->titre ?? 'Invalide' }}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta content="Premium Multipurpose Admin & Dashboard Template" name="description" />
-    <meta content="Themesbrand" name="author" />
+    <meta content="FEDI" name="author" />
     <!-- App favicon -->
     <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">
 
@@ -108,11 +108,11 @@
         <div class="container-fluid">
             <div class="row">
                 <div class="col-sm-6">
-                    <script>document.write(new Date().getFullYear())</script> © Velzon.
+                    <script>document.write(new Date().getFullYear())</script> © Jendouba.
                 </div>
                 <div class="col-sm-6">
                     <div class="text-sm-end d-none d-sm-block">
-                        Design & Develop by Themesbrand
+                        Design & Develop by Fedi Bejaoui
                     </div>
                 </div>
             </div>

@@ -12,7 +12,7 @@
     <meta content="Fedi" name="author" />
     <link rel="shortcut icon" href="{{ asset('assets/images/favicon.ico') }}">
 
-    <!-- Velzon CSS -->
+    <!-- CSS -->
     <link href="{{ asset('assets/libs/swiper/swiper-bundle.min.css') }}" rel="stylesheet" />
     <link href="{{ asset('assets/css/bootstrap.min.css') }}" rel="stylesheet" />
     <link href="{{ asset('assets/css/icons.min.css') }}" rel="stylesheet" />
@@ -289,7 +289,7 @@
 
 </div>
 
-<!-- Velzon JS + Swiper + SweetAlert2 -->
+<!-- JS + Swiper + SweetAlert2 -->
 <script src="{{ asset('assets/libs/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
 <script src="{{ asset('assets/libs/simplebar/simplebar.min.js') }}"></script>
 <script src="{{ asset('assets/libs/node-waves/waves.min.js') }}"></script>
