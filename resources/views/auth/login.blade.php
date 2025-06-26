@@ -75,7 +75,7 @@
 
                                         <div class="mb-3">
                                             <div class="float-end">
-                                                <a href="#" class="text-muted">Mot de passe oublié ?</a>
+                                                <a href="{{ route('password.code.form') }}" class="text-muted">Mot de passe oublié ?</a>
                                             </div>
                                             <label class="form-label" for="password-input">Mot de passe</label>
                                             <div class="position-relative auth-pass-inputgroup mb-3">

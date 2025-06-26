@@ -13,6 +13,7 @@ use App\Http\Controllers\UniversityApplicationController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\MyFormationController;
 use App\Http\Controllers\UnivDashController;
+use App\Http\Controllers\PasswordResetCodeController;
 
 
 
@@ -21,6 +22,41 @@ use App\Http\Controllers\UnivDashController;
 | Web Routes
 |--------------------------------------------------------------------------
 */
+
+
+// Formulaire pour demander un code (email + CIN + téléphone)
+Route::get('/reset-password-request', function () {
+    return view('auth.request-reset-code'); // formulaire d'envoi du code
+})->name('password.code.form');
+
+// Traitement du formulaire d'envoi du code (POST)
+Route::post('/send-reset-code', [PasswordResetCodeController::class, 'sendCode'])->name('password.code.send');
+
+// Formulaire pour vérifier le code reçu par mail
+Route::get('/verify-reset-code', [PasswordResetCodeController::class, 'showVerifyCodeForm'])->name('password.code.form.verify');
+
+// Vérification du code (POST)
+Route::post('/verify-reset-code', [PasswordResetCodeController::class, 'verifyCode'])->name('password.code.verify');
+
+
+// Route pour renvoyer le code par email sans re-saisie des infos
+Route::post('/resend-reset-code', [PasswordResetCodeController::class, 'resendCode'])->name('password.code.resend');
+
+
+// Formulaire de réinitialisation du mot de passe
+// Formulaire de réinitialisation du mot de passe sécurisé
+Route::get('/reset-password', function () {
+    if (!session('password_reset_allowed') || !session('password_reset_email')) {
+        return redirect()->route('password.code.form')->withErrors(['access' => 'Accès refusé. Veuillez suivre la procédure correcte.']);
+    }
+
+    $email = session('password_reset_email');
+    return view('auth.reset-password', ['email' => $email]);
+})->name('password.reset.form');
+
+// Soumission du formulaire
+Route::post('/reset-password', [PasswordResetCodeController::class, 'resetPassword'])->name('password.reset.submit');
+
 
 
 
