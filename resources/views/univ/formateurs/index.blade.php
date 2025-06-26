@@ -8,7 +8,7 @@
       {{-- Header with search --}}
       <div class="card-header border-0">
         <div class="d-md-flex align-items-center">
-          <h5 class="card-title mb-3 mb-md-0 flex-grow-1">Liste des validateurs</h5>
+          <h5 class="card-title mb-3 mb-md-0 flex-grow-1">Liste des formateurs</h5>
           <div class="flex-shrink-0">
             <div class="search-box">
               <input type="text" class="form-control search" placeholder="Rechercher des utilisateurs…" value="{{ request()->search }}">
@@ -23,7 +23,7 @@
         <ul class="nav nav-tabs nav-tabs-custom nav-success mb-3" role="tablist">
           {{-- Only show the 'Établissement' tab --}}
           <li class="nav-item">
-            <a class="nav-link active" data-status="etab" href="#">Validateurs</a>
+            <a class="nav-link active" data-status="etab" href="#">Formateurs</a>
           </li>
         </ul>
 
@@ -38,7 +38,6 @@
                 <th class="sort" data-sort="prenom">Prénom</th>
                 <th class="sort" data-sort="nom">Nom</th>
                 <th class="sort" data-sort="email">Email</th>
-                <th class="sort" data-sort="etablissement">Établissement</th>
                 <th class="text-end">Actions</th>
               </tr>
             </thead>
@@ -55,19 +54,18 @@
                   <td class="prenom">{{ $user->prenom }}</td>
                   <td class="nom">{{ $user->nom }}</td>
                   <td class="email">{{ $user->email }}</td>
-                  <td class="etablissement">{{ optional($user->etablissement)->nom ?? 'Non défini' }}</td>
                   <td class="text-end">
                     <ul class="list-inline hstack gap-2 mb-0">
                       {{-- Edit --}}
                       <li class="list-inline-item" data-bs-toggle="tooltip" title="Éditer">
-                        <a href="{{ route('univ.users.edit', $user->id) }}" class="text-primary">
+                        <a href="{{ route('univ.formateurs.edit', $user->id) }}" class="text-primary">
                           <i class="ri-pencil-fill fs-16"></i>
                         </a>
                       </li>
 
                       {{-- Delete --}}
                       <li class="list-inline-item" data-bs-toggle="tooltip" title="Supprimer">
-                        <form action="{{ route('univ.users.destroy', $user->id) }}" method="POST" class="d-inline-block form-action" data-action="delete">
+                        <form action="{{ route('univ.formateurs.destroy', $user->id) }}" method="POST" class="d-inline-block form-action" data-action="delete">
                           @csrf @method('DELETE')
                           <button type="submit" class="btn p-0 m-0 text-danger">
                             <i class="ri-delete-bin-5-fill fs-16"></i>

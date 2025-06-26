@@ -6,6 +6,8 @@ use Illuminate\Support\Facades\Auth;
 use App\Models\Formation;
 use App\Models\Attendance;
 use Carbon\Carbon;
+use App\Mail\FormationLaunched;
+use Illuminate\Support\Facades\Mail;
 
 class FormateurFormationController extends Controller
 {
@@ -54,15 +56,31 @@ class FormateurFormationController extends Controller
     {
         abort_if($formation->formateur_id !== Auth::id(), 403);
 
-        $data = $request->validate(['link'=>'nullable|url']);
-        if (! empty($data['link'])) $formation->link = $data['link'];
+        $data = $request->validate(['link' => 'nullable|url']);
+
+        if (!empty($data['link'])) {
+            $formation->link = $data['link'];
+        }
+
         $formation->status = 'in_progress';
         $formation->save();
 
+        // ✅ Send email if mode is "a_distance"
+        if ($formation->mode === 'a_distance') {
+            $confirmedUsers = $formation->applicants()
+                ->wherePivot('user_confirmed', true)
+                ->get();
+
+            foreach ($confirmedUsers as $user) {
+                Mail::to($user->email)->send(new FormationLaunched($formation));
+            }
+        }
+
         return redirect()
-            ->route('forma.formations.show',$formation)
-            ->with('success','Formation lancée.');
+            ->route('forma.formations.show', $formation)
+            ->with('success', 'Formation lancée.');
     }
+
 
     public function completed(Formation $formation)
     {

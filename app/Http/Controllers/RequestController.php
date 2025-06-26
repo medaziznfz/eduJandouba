@@ -59,8 +59,19 @@ class RequestController extends Controller
                         ->first();
 
         if ($demande) {
+            // Tableau de traduction des statuts en français
+            $statutsFrancais = [
+                'request_processing' => 'En cours de traitement',
+                'waiting_account_creation' => 'En attente de création de compte',
+                'account_created' => 'Compte créé',
+                'account_declined' => 'Demande refusée',
+            ];
+
+            // Récupérer la traduction du statut ou garder la valeur brute si non trouvée
+            $statutEnFrancais = $statutsFrancais[$demande->status] ?? $demande->status;
+
             return view('request-status', [
-                'status' => $demande->status,
+                'status' => $statutEnFrancais,
                 'demande' => $demande
             ]);
         }
@@ -69,5 +80,6 @@ class RequestController extends Controller
             'cin' => 'Aucune demande trouvée avec ce CIN et cette adresse email.',
         ]);
     }
+
 
 }

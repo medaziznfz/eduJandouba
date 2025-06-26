@@ -14,6 +14,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\MyFormationController;
 use App\Http\Controllers\UnivDashController;
 use App\Http\Controllers\PasswordResetCodeController;
+use App\Http\Controllers\FormateurManagementController;
 
 
 
@@ -336,6 +337,17 @@ Route::middleware(['auth', 'role:univ'])->group(function () {
     Route::get('/univ/users/{user}/edit', [UserManagementController::class, 'edit'])->name('univ.users.edit');
     Route::put('/univ/users/{user}', [UserManagementController::class, 'update'])->name('univ.users.update');
     Route::delete('/univ/users/{user}', [UserManagementController::class, 'destroy'])->name('univ.users.destroy');
+});
+
+
+Route::middleware(['auth', 'role:univ'])->group(function () {
+    // Routes for User Management
+    Route::get('/univ/formateurs', [FormateurManagementController::class, 'index'])->name('univ.formateurs.index');
+    Route::get('/univ/formateurs/create', [FormateurManagementController::class, 'create'])->name('univ.formateurs.create');
+    Route::post('/univ/formateurs', [FormateurManagementController::class, 'store'])->name('univ.formateurs.store');
+    Route::get('/univ/formateurs/{user}/edit', [FormateurManagementController::class, 'edit'])->name('univ.formateurs.edit');
+    Route::put('/univ/formateurs/{user}', [FormateurManagementController::class, 'update'])->name('univ.formateurs.update');
+    Route::delete('/univ/formateurs/{user}', [FormateurManagementController::class, 'destroy'])->name('univ.formateurs.destroy');
 });
 
 

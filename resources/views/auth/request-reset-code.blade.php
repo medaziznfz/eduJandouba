@@ -37,7 +37,7 @@
             <div class="row">
                 <div class="col-lg-12">
                     <div class="text-center mt-sm-5 mb-4 text-white-50">
-                        <a href="index.html" class="d-inline-block auth-logo">
+                        <a href="/" class="d-inline-block auth-logo">
                             <img src="{{ asset('assets/images/logo-light.png') }}" alt="Logo" height="50">
                         </a>
                     </div>

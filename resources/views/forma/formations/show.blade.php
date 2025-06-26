@@ -360,26 +360,40 @@
 @push('scripts')
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script>
-  document.addEventListener('DOMContentLoaded', function(){
-    // SweetAlert pour le lancement
-    const launchBtn = document.getElementById('launch-btn');
-    if (launchBtn) {
-      launchBtn.addEventListener('click', e => {
-        e.preventDefault();
-        Swal.fire({
-          title: 'Confirmer le lancement ?',
-          icon: 'question',
-          showCancelButton: true,
-          confirmButtonText: 'Oui, lancer',
-          cancelButtonText: 'Annuler'
-        }).then(res => {
-          if (res.isConfirmed) {
-            document.getElementById('launch-form').submit();
-          }
+    document.addEventListener('DOMContentLoaded', function() {
+        const btn = document.getElementById('launch-btn');
+        if (!btn) return;
+
+        btn.addEventListener('click', function(e) {
+            e.preventDefault();
+            const cap   = {{ $formation->capacite }};
+            const conf  = {{ $formation->nbre_inscrit }};
+            const f     = @json($formation->formateur->only('prenom','nom','email'));
+            const meet  = document.getElementById('link')?.value || '';
+
+            let html = `
+                <p><strong>Capacité :</strong> ${cap}</p>
+                <p><strong>Confirmés :</strong> ${conf}</p>
+                <p><strong>Formateur :</strong> ${f.prenom} ${f.nom} (${f.email})</p>
+            `;
+            if (meet) {
+                html += `<p><strong>Lien :</strong> <a href="${meet}" target="_blank">${meet}</a></p>`;
+            }
+
+            Swal.fire({
+                title: 'Confirmer le lancement',
+                html: html,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: 'Oui, lancer',
+                cancelButtonText: 'Annuler'
+            }).then(result => {
+                if (result.isConfirmed) {
+                    document.getElementById('launch-form').submit();
+                }
+            });
         });
-      });
-    }
-  });
+    });
 </script>
 
 

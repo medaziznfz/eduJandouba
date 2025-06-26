@@ -62,7 +62,7 @@
         <div class="header">
             <h2>Attestation de Formation</h2>
             <p><strong>Titre de la formation:</strong> {{ $formation->titre }}</p>
-            <p><strong>Formateur:</strong> {{ $formation->formateur_name }} ({{ $formation->formateur_email }})</p>
+            <p><strong>Formateur:</strong> {{ optional($formation->formateur)->prenom }} {{ optional($formation->formateur)->nom }} ({{ optional($formation->formateur)->email }})</p>
             <p><strong>Date de début:</strong> {{ \Carbon\Carbon::parse($formation->start_at)->format('d M, Y') }}</p>
             <p><strong>Lieu:</strong> {{ $formation->lieu }}</p>
         </div>

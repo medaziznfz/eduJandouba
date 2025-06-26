@@ -111,7 +111,7 @@
                                    data-bs-toggle="tab"
                                    href="#tab-launch"
                                    role="tab">
-                                    Lancer formation
+                                    formation status
                                 </a>
                             </li>
                         </ul>
@@ -229,23 +229,7 @@
                             <h6 class="fw-semibold text-uppercase mb-3">Démarrer la Formation</h6>
 
                             @if($formation->status == 'available')
-                                {{-- Formulaire de lancement --}}
-                                <form action="{{ route('univ.formations.launch', $formation) }}" method="POST" id="launch-form">
-                                    @csrf
-
-
-                                    @if($formation->mode == 'a_distance')
-                                        <div class="mb-4">
-                                            <label for="link" class="form-label">Lien de la rencontre</label>
-                                            <input type="url" id="link" class="form-control" value="{{ old('link', $formation->link) }}" name="link" required>
-                                        </div>
-                                    @endif
-
-                                    {{-- Launch Button --}}
-                                    <button type="submit" class="btn btn-success btn-lg mb-5" id="launch-btn">
-                                        <i class="ri-play-line align-bottom"></i> Lancer la formation
-                                    </button>
-                                </form>
+                                
 
                                 {{-- Display list of users (Confirmed, Not Confirmed, and Waiting) in the same line --}}
                                 <div class="container mb-4">

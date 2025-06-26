@@ -339,12 +339,24 @@
               </li>
               <li class="nav-item">
                 <a class="nav-link collapsed" data-bs-toggle="collapse" href="#sidebarUsers" role="button" aria-expanded="false" aria-controls="sidebarUsers">
-                  <i class="ri-user-line"></i> Gestion des utilisateurs
+                  <i class="ri-user-follow-line"></i> Gestion des Validateurs
                 </a>
                 <div class="collapse menu-dropdown" id="sidebarUsers">
                   <ul class="nav nav-sm flex-column">
-                    <li class="nav-item"><a class="nav-link" href="{{ route('univ.users.index') }}">Liste des utilisateurs</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ route('univ.users.create') }}">Ajouter un utilisateur</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('univ.users.index') }}">Liste des Validateurs</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('univ.users.create') }}">Ajouter un Validateur</a></li>
+                  </ul>
+                </div>
+              </li>
+
+              <li class="nav-item">
+                <a class="nav-link collapsed" data-bs-toggle="collapse" href="#sidebarFormateurs" role="button" aria-expanded="false" aria-controls="sidebarUsers">
+                  <i class="ri-user-voice-line"></i> Gestion des Formateurs
+                </a>
+                <div class="collapse menu-dropdown" id="sidebarFormateurs">
+                  <ul class="nav nav-sm flex-column">
+                    <li class="nav-item"><a class="nav-link" href="{{ route('univ.formateurs.index') }}">Liste des Formateurs</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ route('univ.formateurs.create') }}">Ajouter un Formateurs</a></li>
                   </ul>
                 </div>
               </li>

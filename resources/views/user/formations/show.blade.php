@@ -132,7 +132,7 @@
                                     S’inscrire
                                 </a>
                             </li>
-                            @if(in_array($formation->status, ['available','in_progress']) && $requestStatus === 4)
+                            @if(($formation->status == 'available' || $formation->status == 'in_progress') && $requestStatus == 4 && $formation->mode == 'presentielle')
                                 <li class="nav-item">
                                     <a class="nav-link fw-semibold"
                                        data-bs-toggle="tab"
@@ -318,7 +318,8 @@
                 </div><!-- end tab-inscrire -->
 
                 {{-- Onglet Attestation --}}
-                @if(($formation->status == 'available' || $formation->status == 'in_progress')&& $requestStatus == 4)
+                @if(($formation->status == 'available' || $formation->status == 'in_progress') && $requestStatus == 4 && $formation->mode == 'presentielle')
+
                     <div class="tab-pane fade" id="tab-attestation" role="tabpanel">
                         <div class="card">
                             <div class="card-body">
@@ -363,9 +364,8 @@
                                                             <p><strong>Mode:</strong> {{ $formation->mode === 'a_distance' ? 'À distance' : 'Présentiel' }}</p>
                                                             <p><strong>Durée:</strong> {{ $formation->duree }}</p>
                                                             <p><strong>Capacité:</strong> {{ $formation->capacite }}</p>
-                                                            <p><strong>Formateur:</strong> {{ $formation->formateur_name }} ({{ $formation->formateur_email }})</p>
+                                                            <p><strong>Formateur:</strong>  {{ optional($formation->formateur)->prenom }} {{ optional($formation->formateur)->nom }} ({{ optional($formation->formateur)->email }})</p>
                                                             <p><strong>Sessions:</strong> {{ $formation->sessions }}</p>
-                                                            <p><strong>Link:</strong> <a href="{{ $formation->link }}" target="_blank">{{ $formation->link }}</a></p>
                                                         </div>
                                                         <!-- QR Code -->
                                                         <div class="col-lg-6 col-12">
